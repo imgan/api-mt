@@ -32,7 +32,7 @@ app.use(function(req, res, next) {
 });
 
 const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.PASSWORD, {
-  host: 'localhost',
+  host: '103.86.153.106',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {
