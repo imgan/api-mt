@@ -31,8 +31,8 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.PASSWORD, {
-  host: '103.86.153.106',
+const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASSWORD, {
+  host: 'sql12.freemysqlhosting.net',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {
