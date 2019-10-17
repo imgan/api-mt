@@ -11,7 +11,7 @@ const router = express.Router();
 /* GET users listing. */
 router.post('/getmerek', function (req, res, next) {
     MerekSchema.findAndCountAll()
-        .then((merek) => {
+        .then((data) => {
           if (merek.length < 1) {
             res.status(404).json({
               message: 'Not Found',
@@ -19,7 +19,7 @@ router.post('/getmerek', function (req, res, next) {
           }
           else {
             res.status(200).json({
-                merek
+                data
             })
           }
           // });x

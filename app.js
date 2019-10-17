@@ -1,4 +1,5 @@
-require("dotenv").config();
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -11,6 +12,8 @@ var usersRouter = require('./routes/users');
 var patensRouter = require('./routes/patens');
 var mereksRouter = require('./routes/mereks');
 var hakciptasRouter = require('./routes/hakcipta');
+var desainindustiRouter = require('./routes/desainindustri');
+
 
 
 
@@ -18,6 +21,8 @@ const UserModel = require('./model/muser');
 const PatenModel = require('./model/mspaten');
 const MerekModel = require('./model/msmerek');
 const HakciptaModel = require('./model/mshakcipta');
+const DesainModel = require('./model/msdesainindustri');
+
 
 
 
@@ -39,6 +44,8 @@ app.use('/users', usersRouter);
 app.use('/patens', patensRouter);
 app.use('/mereks', mereksRouter);
 app.use('/hakciptas', hakciptasRouter);
+app.use('/desain', desainindustiRouter);
+
 
 
 
@@ -49,7 +56,7 @@ app.use(function(req, res, next) {
 });
 
 const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASSWORD, {
-  host: 'sql12.freemysqlhosting.net',
+  host: 'localhost',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {

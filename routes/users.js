@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 
 const express = require('express');
 const UserSchema = require('../model/muser');
@@ -29,6 +29,7 @@ router.post('/register', async function (req, res, next) {
     name: req.body.name,
     role_id: req.body.role_id,
   }
+
   Joi.validate(payload, validate)
     .then(validated => {
       try {
@@ -40,7 +41,7 @@ router.post('/register', async function (req, res, next) {
           is_active
         } = req.body;
 
-        bcrypt.hash(password,10, async function (err, hash) {
+        bcrypt.hash(password,process.env.SALT, async function (err, hash) {
           // Store hash in your password DB.
           try {
             const users = await UserSchema.create({
@@ -91,7 +92,7 @@ router.post('/login', (req, res) => {
 
   Joi.validate(payload, validate)
     .then(validated => {
-      bcrypt.hash(req.body.password, process.env.salt, function (err, hash) {
+      bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
         // Store hash in database
         UserSchema.findAll({
           where: {
@@ -106,7 +107,7 @@ router.post('/login', (req, res) => {
             }
             else {
               bcrypt.compare(req.body.password, user.password, function (err, result) {
-                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active : user[0].is_active }, 'mysikritkey');
+                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active : user[0].is_active }, process.env.JWTKU);
                 res.status(200).json({
                   message: 'Success',
                   status: 200,

@@ -10,29 +10,14 @@ const msdesainindustri = sequelize.define("msdesainindustri", {
     judul: {
         type: Sequelize.STRING,
     },
-    kelas: {
-        type: Sequelize.STRING,
+    unit_kerja: {
+        type: Sequelize.INTEGER,
         allowNull: false,
     },
-    unit_kerja: {
+    no_handphone: {
 		type: Sequelize.STRING
     },
-    jumlah_klaim : {
-        type: Sequelize.INTEGER,
-    },
-    pemeriksa_merek: {
-        type: Sequelize.STRING,
-    },
-    kontak_pemeriksa: {
-        type: Sequelize.STRING,
-    },
-    email_pemeriksa : {
-        type: Sequelize.STRING,
-    },
-    no_handphone : {
-        type: Sequelize.STRING,
-    },
-    ipman_code: {
+    ipman_code : {
         type: Sequelize.STRING,
     },
     status: {
@@ -41,23 +26,35 @@ const msdesainindustri = sequelize.define("msdesainindustri", {
     pernah_diajukan: {
         type: Sequelize.INTEGER,
     },
+    tahun_pendaftaran : {
+        type: Sequelize.STRING,
+    },
+    tahun_granted : {
+        type: Sequelize.STRING,
+    },
     sertifikasi: {
         type: Sequelize.DATE,
     },
-    tahun_pendaftaran: {
+    pemeriksa_desain: {
         type: Sequelize.STRING,
     },
-    tahun_granted: {
+    kontak_pemeriksa: {
+        type: Sequelize.STRING,
+    },
+    email_pemeriksa: {
         type: Sequelize.STRING,
     },
     nomor_pendaftar: {
+        type: Sequelize.STRING,
+    },
+    nomor_desain: {
         type: Sequelize.STRING,
     },
     keterangan: {
         type: Sequelize.STRING,
     },
     index: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
     },
     tgl_input: {
         type: Sequelize.DATE,
@@ -76,7 +73,7 @@ const msdesainindustri = sequelize.define("msdesainindustri", {
 });
 
 // force: true will drop the table if it already exists
-// msmerek.sync({ force: true }).then(() => {
+// msdesainindustri.sync({ force: true }).then(() => {
     // Table created
     // return mspaten.create({
     //     name: 'admin',
@@ -84,5 +81,5 @@ const msdesainindustri = sequelize.define("msdesainindustri", {
     //     email : 'imamsatrianta@gmail.com'
     // });
 // });
-module.exports = msmerek;
+module.exports = msdesainindustri;
 
