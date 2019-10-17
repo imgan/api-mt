@@ -44,20 +44,33 @@ router.post('/register', async function (req, res, next) {
         bcrypt.hash(password, 10 , async function (err, hash) {
           // Store hash in your password DB.
           try {
-            const users = await UserSchema.create({
-              name,
-              email,
-              password: hash,
-              role_id: 13,
-              is_active: 3,
-            });
-            if (users) {
-              res.status(201).json({
-                status: 200,
-                messages: 'User berhasil ditambahkan',
-                data: users,
+            const cek = await UserSchema.findAll({
+              where: {
+                email : req.body.email
+              }
+            })
+            if (cek.length > 0){
+              res.status(401).json({
+                status: 401,
+                messages: 'Email Already Exist',
               })
+            } else {
+              const users = await UserSchema.create({
+                name,
+                email,
+                password: hash,
+                role_id: 13,
+                is_active: 3,
+              });
+              if (users) {
+                res.status(201).json({
+                  status: 200,
+                  messages: 'User berhasil ditambahkan',
+                  data: users,
+                })
+              }
             }
+           
           } catch (error) {
             res.status(400).json({
               'status': 'ERROR',
