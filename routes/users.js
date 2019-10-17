@@ -115,6 +115,8 @@ router.post('/login', (req, res) => {
                    expiresIn: "7d" 
                 });
                 // jwt.verify(token, process.env.JWTKU , function(err, decoded) {
+                  // console.log(token) // bar
+
                   // console.log(decoded) // bar
                 res.status(200).json({
                   message: 'Success',
