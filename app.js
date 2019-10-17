@@ -13,6 +13,8 @@ var patensRouter = require('./routes/patens');
 var mereksRouter = require('./routes/mereks');
 var hakciptasRouter = require('./routes/hakcipta');
 var desainindustiRouter = require('./routes/desainindustri');
+var pegawaiRouter = require('./routes/pegawai');
+
 
 
 
@@ -22,6 +24,8 @@ const PatenModel = require('./model/mspaten');
 const MerekModel = require('./model/msmerek');
 const HakciptaModel = require('./model/mshakcipta');
 const DesainModel = require('./model/msdesainindustri');
+const PegawaiModel = require('./model/mspegawai');
+
 
 
 
@@ -45,6 +49,8 @@ app.use('/patens', patensRouter);
 app.use('/mereks', mereksRouter);
 app.use('/hakciptas', hakciptasRouter);
 app.use('/desain', desainindustiRouter);
+app.use('/pegawai', pegawaiRouter);
+
 
 
 
