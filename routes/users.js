@@ -41,7 +41,7 @@ router.post('/register', async function (req, res, next) {
           is_active
         } = req.body;
 
-        bcrypt.hash(password,process.env.SALT, async function (err, hash) {
+        bcrypt.hash(password, 10 , async function (err, hash) {
           // Store hash in your password DB.
           try {
             const users = await UserSchema.create({

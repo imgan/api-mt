@@ -12,7 +12,7 @@ const router = express.Router();
 /* GET users listing. */
 router.post('/getpaten', function (req, res, next) {
     PatenSchema.findAndCountAll()
-        .then((paten) => {
+        .then((data) => {
           if (data.length < 1) {
             res.status(404).json({
               message: 'Not Found',
@@ -46,7 +46,7 @@ router.post('/getpatenbyyear', function (req, res, next) {
         else {
           // console.log(data[0][0].tahun)
           res.status(200).json({
-              data:data[0]
+              data
           })
         }
       })
@@ -79,7 +79,7 @@ router.post('/getpatendraft', function (req, res, next) {
         else {
           // console.log(data[0][0].tahun)
           res.status(200).json({
-              data:data[0]
+              data
           })
         }
       })
