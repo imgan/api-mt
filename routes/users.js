@@ -94,6 +94,7 @@ router.post('/login', (req, res) => {
     .then(validated => {
       bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
         // Store hash in database
+        // console.log(process.env.JWTKU);
         UserSchema.findAll({
           where: {
             email: req.body.email,
@@ -106,13 +107,22 @@ router.post('/login', (req, res) => {
               });
             }
             else {
+              var signOptions = {
+               
+               };
               bcrypt.compare(req.body.password, user.password, function (err, result) {
-                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active : user[0].is_active }, process.env.JWTKU);
+                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active : user[0].is_active }, process.env.JWTKU, {
+                   expiresIn: "7d" 
+                });
+                // jwt.verify(token, process.env.JWTKU , function(err, decoded) {
+                  // console.log(decoded) // bar
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
                   token : token,
+                  // decoded : decoded
                 });
+              // });
               });
             }
             // });x
