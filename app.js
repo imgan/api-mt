@@ -8,7 +8,18 @@ const Sequelize = require('sequelize');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var patensRouter = require('./routes/patens');
+var mereksRouter = require('./routes/mereks');
+var hakciptasRouter = require('./routes/hakcipta');
+
+
+
 const UserModel = require('./model/muser');
+const PatenModel = require('./model/mspaten');
+const MerekModel = require('./model/msmerek');
+const HakciptaModel = require('./model/mshakcipta');
+
+
 
 
 var app = express();
@@ -25,6 +36,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/patens', patensRouter);
+app.use('/mereks', mereksRouter);
+app.use('/hakciptas', hakciptasRouter);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -32,7 +49,7 @@ app.use(function(req, res, next) {
 });
 
 const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASSWORD, {
-  host: 'sql12.freemysqlhosting.net',
+  host: 'localhost',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {

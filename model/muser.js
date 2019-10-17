@@ -17,7 +17,7 @@ const msuser = sequelize.define("msuser", {
     },
     image: {
         type: Sequelize.BLOB('long'),
-        allowNull: false,
+        allowNull: true,
     },
     image_size: {
 		type: Sequelize.INTEGER
