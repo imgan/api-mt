@@ -4,12 +4,13 @@ const express = require('express');
 const MerekSchema = require('../model/msmerek');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
+const checkAuth = require('../middleware/check-auth');
 
 
 const router = express.Router();
 
 /* GET users listing. */
-router.post('/getmerek', function (req, res, next) {
+router.post('/getmerek', checkAuth,  function (req, res, next) {
     MerekSchema.findAndCountAll()
         .then((data) => {
           if (data.length < 1) {

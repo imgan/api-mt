@@ -4,12 +4,13 @@ const express = require('express');
 const desainSchema = require('../model/mshakcipta');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
+const checkAuth = require('../middleware/check-auth');
 
 
 const router = express.Router();
 
 /* GET users listing. */
-router.post('/getdesain', function (req, res, next) {
+router.post('/getdesain', checkAuth , function (req, res, next) {
   desainSchema.findAndCountAll()
         .then((data) => {
           if (data.length < 1) {
