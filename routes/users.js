@@ -107,11 +107,8 @@ router.post('/login', (req, res) => {
     .then(validated => {
       bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
         // Store hash in database
-        UserSchema.findAll({
-          where: {
-            email: req.body.email,
-          }
-        })
+        UserSchema.sequelize.query('SELECT a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrev b on a.role_id = b.id where a.email = "' +req.body.email+'" ',
+          { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT }})
           .then((user) => {
             if (user.length < 1) {
               res.status(401).json({
@@ -119,19 +116,20 @@ router.post('/login', (req, res) => {
               });
             }
             else {
-              bcrypt.compare(req.body.password, user[0].password, function (err, result) {
-                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active: user[0].is_active }, process.env.JWTKU, {
+              const users = user[0];
+              bcrypt.compare(req.body.password, users[0].password, function (err, result) {
+                const token = jwt.sign({ email: users[0].email, role: users[0].role_id, is_active: users[0].is_active }, process.env.JWTKU, {
                   expiresIn: "30d"
                 });
-                console.log(user);
+             
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
-                  email : user[0].email,
-                  role: user[0].role_id,
-                  is_active : user[0].is_active,
-                  name : user[0].name,
-                  image : user[0].image,
+                  email : users[0].email,
+                  role: users[0].role_id,
+                  is_active : users[0].is_active,
+                  name : users[0].name,
+                  image : users[0].image,
                   token: token,
                 });
               });
