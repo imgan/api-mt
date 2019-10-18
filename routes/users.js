@@ -130,6 +130,10 @@ router.post('/login', (req, res) => {
                   is_active : users[0].is_active,
                   name : users[0].name,
                   image : users[0].image,
+                  nama_rev : users[0].nama_rev,
+                  status : users[0].status,
+                  keterangan : users[0].keterangan,
+                  golongan : users[0].golongan,
                   token: token,
                 });
               });
