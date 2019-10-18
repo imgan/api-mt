@@ -6,8 +6,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const Sequelize = require('sequelize');
-const bodyParser = require('body-parser');
-
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -18,20 +16,12 @@ var desainindustiRouter = require('./routes/desainindustri');
 var pegawaiRouter = require('./routes/pegawai');
 
 
-
-
-
 const UserModel = require('./model/muser');
 const PatenModel = require('./model/mspaten');
 const MerekModel = require('./model/msmerek');
 const HakciptaModel = require('./model/mshakcipta');
 const DesainModel = require('./model/msdesainindustri');
 const PegawaiModel = require('./model/mspegawai');
-
-
-
-
-
 
 var app = express();
 
@@ -40,8 +30,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -52,11 +42,6 @@ app.use('/mereks', mereksRouter);
 app.use('/hakciptas', hakciptasRouter);
 app.use('/desain', desainindustiRouter);
 app.use('/pegawai', pegawaiRouter);
-
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 
 
 // catch 404 and forward to error handler
