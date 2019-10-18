@@ -129,6 +129,9 @@ router.post('/login', (req, res) => {
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
+                  email : user[0].email,
+                  role: user[0].role_id,
+                  is_active : user[0].is_active,
                   token: token,
                 });
               });

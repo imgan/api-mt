@@ -35,31 +35,17 @@ router.post('/', checkAuth, function (req, res, next) {
 });
 
 router.get('/getpegawai/:id', checkAuth, function (req, res, next) {
-    PegawaiSchema.findAndCountAll({
-        where: {
-            id: req.params.id
-        }
-    })
-        .then((data) => {
-            if (data.length < 1) {
-                res.status(404).json({
-                    message: 'Not Found',
-                });
-            }
-            else {
-                res.status(200).json({
-                    data
-                })
-            }
-            // });x
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-                error: err,
-                status: 500
-            });
-        });
+    PegawaiSchema.findByPk(req.params.id)
+        .then(result =>
+          res.status(200).json({
+              result,
+              id
+          })
+          
+        )
+        .catch(err =>
+          handleError(err)
+        )
 });
 
 router.put('/updatepegawai/:id', checkAuth, function (req, res, next) {
