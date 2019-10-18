@@ -59,7 +59,7 @@ router.post('/register', async function (req, res, next) {
                 name,
                 email,
                 password: hash,
-                role_id: 13,
+                role_id: req.body.role_id,
                 is_active: 3,
               });
               if (users) {
@@ -119,10 +119,7 @@ router.post('/login', (req, res) => {
               });
             }
             else {
-              var signOptions = {
-
-              };
-              bcrypt.compare(req.body.password, user.password, function (err, result) {
+              bcrypt.compare(req.body.password, user[0].password, function (err, result) {
                 const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active: user[0].is_active }, process.env.JWTKU, {
                   expiresIn: "30d"
                 });
