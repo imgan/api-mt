@@ -121,7 +121,6 @@ router.post('/login', (req, res) => {
                 const token = jwt.sign({ email: users[0].email, role: users[0].role_id, is_active: users[0].is_active }, process.env.JWTKU, {
                   expiresIn: "30d"
                 });
-             
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
@@ -131,7 +130,7 @@ router.post('/login', (req, res) => {
                   name : users[0].name,
                   image : users[0].image,
                   nama_rev : users[0].nama_rev,
-                  status : users[0].status,
+                  status_rev : users[0].status,
                   keterangan : users[0].keterangan,
                   golongan : users[0].golongan,
                   token: token,
