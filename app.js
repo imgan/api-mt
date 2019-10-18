@@ -51,7 +51,7 @@ app.use('/hakciptas', hakciptasRouter);
 app.use('/desain', desainindustiRouter);
 app.use('/pegawai', pegawaiRouter);
 app.use('/nonpegawai', nonpegawaiRouter);
-app.use('/rev', nonpegawaiRouter);
+app.use('/rev', revRouter);
 
 
 

@@ -11,27 +11,55 @@ const router = express.Router();
 
 /* GET users listing. */
 router.post('/', checkAuth, function (req, res, next) {
-    rev.findAndCountAll()
-        .then((data) => {
-            if (data.length < 1) {
-                res.status(404).json({
-                    message: 'Not Found',
-                });
+    if (req.body.golongan > 0 ) {
+        rev.findAndCountAll({
+            where:{
+                golongan: req.body.golongan
             }
-            else {
-                res.status(200).json({
-                    data
-                })
-            }
-            // });x
         })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-                error: err,
-                status: 500
+            .then((data) => {
+                if (data.length < 1) {
+                    res.status(404).json({
+                        message: 'Not Found',
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        data
+                    })
+                }
+                // });x
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    error: err,
+                    status: 500
+                });
             });
-        });
+    } else {
+        rev.findAndCountAll()
+            .then((data) => {
+                if (data.length < 1) {
+                    res.status(404).json({
+                        message: 'Not Found',
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        data
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    error: err,
+                    status: 500
+                });
+            });
+    }
+
 });
 
 module.exports = router;
