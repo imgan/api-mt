@@ -36,16 +36,12 @@ router.post('/', checkAuth, function (req, res, next) {
 
 router.get('/getpegawai/:id', checkAuth, function (req, res, next) {
     PegawaiSchema.findByPk(req.params.id)
-        .then(result =>
-          res.status(200).json({
-              result,
-              id
-          })
-          
-        )
-        .catch(err =>
-          handleError(err)
-        )
+    .then(data => {
+        res.status(200).json({
+            message: 'success',
+            data : data
+        });
+    })
 });
 
 router.put('/updatepegawai/:id', checkAuth, function (req, res, next) {
@@ -61,6 +57,19 @@ router.put('/updatepegawai/:id', checkAuth, function (req, res, next) {
         console.log(req.params.id);
         res.status(200).json({
             message: 'Update Successfuly',
+            data : data
+        });
+    })
+})
+
+router.delete('/deletepegawai/:id', checkAuth, function (req, res, next) {
+    PegawaiSchema.destroy({
+        where:{
+            id: req.params.id
+        }
+    }).then(data => {
+        res.status(200).json({
+            message: 'Delete Successfuly',
             data : data
         });
     })
@@ -118,4 +127,6 @@ router.post('/addpegawai', checkAuth, async function (req, res, next) {
             }
         })
 });
+
+
 module.exports = router;

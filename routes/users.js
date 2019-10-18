@@ -97,27 +97,27 @@ router.post('/login', (req, res) => {
     email: Joi.string().required(),
     password: Joi.string().required()
   });
-
   let payload = {
     email: req.body.email,
     password: req.body.password,
   }
-
   Joi.validate(payload, validate)
     .then(validated => {
       bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
+        console.log(hash);
         // Store hash in database
         UserSchema.sequelize.query('SELECT a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrev b on a.role_id = b.id where a.email = "' +req.body.email+'" ',
           { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT }})
           .then((user) => {
-            if (user.length < 1) {
+            if (user[0].length < 1) {
               res.status(401).json({
                 message: 'Email atau Password Salah !!!',
               });
             }
             else {
               const users = user[0];
-              bcrypt.compare(req.body.password, users[0].password, function (err, result) {
+
+              bcrypt.compare(hash, users[0].password, function (err, result) {
                 const token = jwt.sign({ email: users[0].email, role: users[0].role_id, is_active: users[0].is_active }, process.env.JWTKU, {
                   expiresIn: "30d"
                 });

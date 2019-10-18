@@ -14,6 +14,10 @@ var mereksRouter = require('./routes/mereks');
 var hakciptasRouter = require('./routes/hakcipta');
 var desainindustiRouter = require('./routes/desainindustri');
 var pegawaiRouter = require('./routes/pegawai');
+const nonpegawaiRouter = require('./routes/nonpegawai');
+const revRouter = require('./routes/rev');
+
+
 
 
 const UserModel = require('./model/muser');
@@ -22,6 +26,10 @@ const MerekModel = require('./model/msmerek');
 const HakciptaModel = require('./model/mshakcipta');
 const DesainModel = require('./model/msdesainindustri');
 const PegawaiModel = require('./model/mspegawai');
+const NonpegawaiModel = require('./model/msnonpegawai');
+const RevModel = require('./model/msrev');
+
+
 
 var app = express();
 
@@ -42,6 +50,10 @@ app.use('/mereks', mereksRouter);
 app.use('/hakciptas', hakciptasRouter);
 app.use('/desain', desainindustiRouter);
 app.use('/pegawai', pegawaiRouter);
+app.use('/nonpegawai', nonpegawaiRouter);
+app.use('/rev', nonpegawaiRouter);
+
+
 
 
 // catch 404 and forward to error handler
