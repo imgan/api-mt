@@ -125,7 +125,7 @@ router.post('/login', (req, res) => {
                };
               bcrypt.compare(req.body.password, user.password, function (err, result) {
                 const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active : user[0].is_active }, process.env.JWTKU, {
-                   expiresIn: "7d" 
+                   expiresIn: "30d" 
                 });
                 // jwt.verify(token, process.env.JWTKU , function(err, decoded) {
                   // console.log(token) // bar
