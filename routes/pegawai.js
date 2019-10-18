@@ -11,7 +11,7 @@ const router = express.Router();
 
 /* GET users listing. */
 router.post('/', checkAuth, function (req, res, next) {
-    MerekSchema.findAndCountAll()
+    PegawaiSchema.findAndCountAll()
         .then((data) => {
             if (data.length < 1) {
                 res.status(404).json({
@@ -62,39 +62,23 @@ router.get('/getpegawai/:id', checkAuth, function (req, res, next) {
         });
 });
 
-router.put('/:id', checkAuth, function (req, res, next) {
-    PegawaiSchema.findAndCountAll()
-        .then((data) => {
-            if (data.length < 1) {
-                res.status(404).json({
-                    message: 'Not Found',
-                });
-            }
-            else {
-                PegawaiSchema.update(
-                    { nama: req.body.nama },
-                    { nik: req.body.nik },
-                    { kode_kepegawaian: req.body.kode_kepegawaian },
-                    {
-                        where: {
-                            id: req.params.id
-                        }
-                    }
-                )
-                    .then(function (updatedBook) {
-                        res.json(updatedBook)
-                    })
-                    .catch(next)
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-                error: err,
-                status: 500
-            });
+router.put('/updatepegawai/:id', checkAuth, function (req, res, next) {
+    PegawaiSchema.update({
+        kode_kepegawaian: req.body.kode_kepegawaian,
+        nama :  req.body.nama,
+        nik : req.body.nik
+    },{
+        where:{
+            id: req.params.id
+        }
+    }).then(data => {
+        console.log(req.params.id);
+        res.status(200).json({
+            message: 'Update Successfuly',
+            data : data
         });
-});
+    })
+})
 
 router.post('/addpegawai', checkAuth, async function (req, res, next) {
     let validate = Joi.object().keys({

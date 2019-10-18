@@ -41,15 +41,15 @@ router.post('/register', async function (req, res, next) {
           is_active
         } = req.body;
 
-        bcrypt.hash(password, 10 , async function (err, hash) {
+        bcrypt.hash(password, 10, async function (err, hash) {
           // Store hash in your password DB.
           try {
             const cek = await UserSchema.findAll({
               where: {
-                email : req.body.email
+                email: req.body.email
               }
             })
-            if (cek.length > 0){
+            if (cek.length > 0) {
               res.status(401).json({
                 status: 401,
                 messages: 'Email Already Exist',
@@ -70,7 +70,7 @@ router.post('/register', async function (req, res, next) {
                 })
               }
             }
-           
+
           } catch (error) {
             res.status(400).json({
               'status': 'ERROR',
@@ -107,7 +107,6 @@ router.post('/login', (req, res) => {
     .then(validated => {
       bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
         // Store hash in database
-        // console.log(process.env.JWTKU);
         UserSchema.findAll({
           where: {
             email: req.body.email,
@@ -121,26 +120,19 @@ router.post('/login', (req, res) => {
             }
             else {
               var signOptions = {
-               
-               };
-              bcrypt.compare(req.body.password, user.password, function (err, result) {
-                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active : user[0].is_active }, process.env.JWTKU, {
-                   expiresIn: "30d" 
-                });
-                // jwt.verify(token, process.env.JWTKU , function(err, decoded) {
-                  // console.log(token) // bar
 
-                  // console.log(decoded) // bar
+              };
+              bcrypt.compare(req.body.password, user.password, function (err, result) {
+                const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active: user[0].is_active }, process.env.JWTKU, {
+                  expiresIn: "30d"
+                });
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
-                  token : token,
-                  // decoded : decoded
+                  token: token,
                 });
-              // });
               });
             }
-            // });x
           })
           .catch((err) => {
             console.log(err);
