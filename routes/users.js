@@ -126,12 +126,15 @@ router.post('/login', (req, res) => {
                 const token = jwt.sign({ email: user[0].email, role: user[0].role_id, is_active: user[0].is_active }, process.env.JWTKU, {
                   expiresIn: "30d"
                 });
+                console.log(user);
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
                   email : user[0].email,
                   role: user[0].role_id,
                   is_active : user[0].is_active,
+                  name : user[0].name,
+                  image : user[0].image,
                   token: token,
                 });
               });
