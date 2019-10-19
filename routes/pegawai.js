@@ -34,8 +34,8 @@ router.post('/', checkAuth, function (req, res, next) {
         });
 });
 
-router.get('/getpegawai/:id', checkAuth, function (req, res, next) {
-    PegawaiSchema.findByPk(req.params.id)
+router.post('/getpegawai', checkAuth, function (req, res, next) {
+    PegawaiSchema.findByPk(req.body.id)
     .then(data => {
         res.status(200).json({
             message: 'success',
