@@ -7,6 +7,7 @@ const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
 const multer = require('multer');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -25,13 +26,16 @@ const storage = multer.diskStorage({
     if (file.mimetype === 'image/jpeg') {
       filetype = 'jpg';
     }
-    cb(null, 'image-' + Date.now() + '.' + filetype);
+    if (file.mimetype === 'text/plain') {
+      filetype = 'txt';
+    }
+    cb(null, 'file-' + Date.now() + '.' + filetype);
   }
 });
 
 const fileFilter = (req, file, cb) => {
   // reject a file
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'text/plain') {
     cb(null, true);
   } else {
     cb(null, false);
@@ -195,12 +199,45 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
     })
 });
 
-router.post('/addfile', upload.single('path'), checkAuth, async function (req, res, next) {
+// router.post('/addfile', upload.single('path'),checkAuth, async function (req, res, next) {
+//   try {
+//     const schema = {
+//       gambar: req.file.path,
+//       abstrak: req.file.abstrak
+//     }
+//     try {
+//       const paten = PatenSchema.create(schema)
+//         .then(result => res.status(201).json({
+//           status: 201,
+//           messages: 'Gambar berhasil ditambahkan',
+//         }));
+//     } catch (error) {
+//       res.status(400).json({
+//         'status': 'ERROR',
+//         'messages': error.message,
+//         'data': {},
+//       })
+//     }
+//   }
+//   catch (err) {
+//     res.status(400).json({
+//       'status': 'ERROR',
+//       'messages': err.message,
+//       'data': {},
+//     })
+//   }
+// });
+
+router.post('/addfile', function (req, res, next) {
   try {
-    const schema = {
-      gambar: req.file.path
-    }
+    const path = './public/images/' + Date.now() + '.png';
+    const imgdata = req.body.image;
+    let base64Image = imgdata.split(';base64,').pop();
+    fs.writeFileSync(path, base64Image,  {encoding: 'base64'});
     try {
+      const schema = {
+        gambar: path
+      }
       const paten = PatenSchema.create(schema)
         .then(result => res.status(201).json({
           status: 201,
@@ -222,5 +259,6 @@ router.post('/addfile', upload.single('path'), checkAuth, async function (req, r
     })
   }
 });
+
 
 module.exports = router;

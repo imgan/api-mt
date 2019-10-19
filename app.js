@@ -41,12 +41,6 @@ const msipmancodeModel = require('./model/msipmancode');
 const dpatenmodel = require('./model/msdpaten');
 const msdokumen = require('./model/msdokumen');
 
-
-
-
-
-
-
 var app = express();
 
 // view engine setup
@@ -72,14 +66,7 @@ app.use('/dokumen', jenisdokumenRouter);
 app.use('/lib', msipmancodeRouter);
 app.use('/patens', dpatenRouter);
 app.use('/dokumen', dokumenRouter);
-
-
-
-
-
-
-
-
+app.use('/public', express.static(__dirname + '/public'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
