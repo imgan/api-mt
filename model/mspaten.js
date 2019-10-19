@@ -12,8 +12,6 @@ const mspaten = sequelize.define("mspaten", {
     },
     abstrak: {
         type: Sequelize.STRING,
-        allowNull: false,
-        email : true
     },
     gambar: {
         type: Sequelize.STRING,

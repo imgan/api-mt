@@ -17,6 +17,8 @@ var pegawaiRouter = require('./routes/pegawai');
 const nonpegawaiRouter = require('./routes/nonpegawai');
 const revRouter = require('./routes/rev');
 const jenisdokumenRouter = require('./routes/jenisdokumen');
+const msipmancodeRouter = require('./routes/helper/lib');
+
 
 
 
@@ -31,6 +33,8 @@ const PegawaiModel = require('./model/mspegawai');
 const NonpegawaiModel = require('./model/msnonpegawai');
 const RevModel = require('./model/msrev');
 const jenisdokumenModel = require('./model/msjenisdokumen');
+const msipmancodeModel = require('./model/msipmancode');
+
 
 
 
@@ -57,6 +61,8 @@ app.use('/pegawai', pegawaiRouter);
 app.use('/nonpegawai', nonpegawaiRouter);
 app.use('/rev', revRouter);
 app.use('/dokumen', jenisdokumenRouter);
+app.use('/lib', msipmancodeRouter);
+
 
 
 

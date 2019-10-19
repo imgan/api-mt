@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require('express');
 const DokumenSchema = require('../model/msjenisdokumen');
 const checkAuth = require('../middleware/check-auth');
+const Joi = require('joi');
 
 const router = express.Router();
 
@@ -89,13 +90,13 @@ router.post('/addjenisdokumen', checkAuth, async function (req, res, next) {
         id_role: Joi.string().required(),
         jenis_dokumen: Joi.string().required(),
         penamaan_file: Joi.string().required(),
-        downloadble: Joi.string().required(),
+        downloadable: Joi.string().required(),
     });
 
     let payload = {
         jenis_dokumen: req.body.jenis_dokumen,
         penamaan_file: req.body.penamaan_file,
-        downloadble: req.body.downloadble,
+        downloadable: req.body.downloadable,
         id_haki: req.body.id_haki,
         id_role: req.body.id_role,
     }
@@ -106,7 +107,7 @@ router.post('/addjenisdokumen', checkAuth, async function (req, res, next) {
                 const {
                     jenis_dokumen,
                     penamaan_file,
-                    downloadble,
+                    downloadable,
                     id_haki,
                     id_role
                 } = req.body;
@@ -114,7 +115,7 @@ router.post('/addjenisdokumen', checkAuth, async function (req, res, next) {
                     const jenisdokumen = DokumenSchema.create({
                         jenis_dokumen,
                         penamaan_file,
-                        downloadble,
+                        downloadable,
                         id_haki,
                         id_role
                     });
