@@ -230,7 +230,7 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
 
 router.post('/addfile', function (req, res, next) {
   try {
-    const path = './public/images/' + Date.now() + '.png';
+    const path = './public/images/' + Date.now() + '.txt';
     const imgdata = req.body.image;
     let base64Image = imgdata.split(';base64,').pop();
     fs.writeFileSync(path, base64Image,  {encoding: 'base64'});
