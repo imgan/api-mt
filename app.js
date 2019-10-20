@@ -20,6 +20,8 @@ const jenisdokumenRouter = require('./routes/jenisdokumen');
 const dokumenRouter = require('./routes/dokumen');
 const msipmancodeRouter = require('./routes/helper/lib');
 const dpatenRouter = require('./routes/dpaten');
+const dmerekRouter = require('./routes/mereks');
+
 
 
 
@@ -40,6 +42,8 @@ const jenisdokumenModel = require('./model/msjenisdokumen');
 const msipmancodeModel = require('./model/msipmancode');
 const dpatenmodel = require('./model/msdpaten');
 const msdokumen = require('./model/msdokumen');
+const msdmerek = require('./model/msdmerek');
+
 
 var app = express();
 
@@ -66,6 +70,8 @@ app.use('/dokumen', jenisdokumenRouter);
 app.use('/lib', msipmancodeRouter);
 app.use('/patens', dpatenRouter);
 app.use('/dokumen', dokumenRouter);
+app.use('/mereks', dmerekRouter);
+
 app.use('/public', express.static(__dirname + '/public'));
 
 // catch 404 and forward to error handler

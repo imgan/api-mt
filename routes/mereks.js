@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require('express');
 const MerekSchema = require('../model/msmerek');
+const DmerekSchema = require('../model/msdmerek');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
@@ -94,4 +95,47 @@ router.post('/addmerek', checkAuth, async function (req, res, next) {
     })
 });
 
+router.post('/adddmerek', checkAuth, async function (req, res, next) {
+
+  let validate = Joi.object().keys({
+    id_merek: Joi.number().required(),
+    nik: Joi.number().required(),
+  });
+
+  let payload = {
+    id_merek: req.body.id_merek,
+    nik: req.body.nik,
+  }
+
+  Joi.validate(payload, validate)
+    .then(validated => {
+      try {
+        const schema = {
+          id_merek: req.body.id_merek,
+          nik: req.body.nik,
+        } = req.body;
+        try {
+          const paten = MerekSchema.create(schema)
+            .then(result => res.status(201).json({
+              status: 201,
+              messages: 'Merek berhasil ditambahkan',
+              id: result.id,
+            }));
+        } catch (error) {
+          res.status(400).json({
+            'status': 'ERROR',
+            'messages': error.message,
+            'data': {},
+          })
+        }
+      }
+      catch (err) {
+        res.status(400).json({
+          'status': 'ERROR',
+          'messages': err.message,
+          'data': {},
+        })
+      }
+    })
+});
 module.exports = router;

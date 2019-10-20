@@ -111,7 +111,7 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
   }
   const userId = req.body.userId
 
-  PatenSchema.sequelize.query('SELECT a.*,b.NAMA_REV FROM msrevs b JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = 19 AND a.KODE_INPUT = ' + userId + ' ')
+  PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = 19 AND a.KODE_INPUT = ' + userId + ' ')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
