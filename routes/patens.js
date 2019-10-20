@@ -53,7 +53,9 @@ const upload = multer({
 
 /* GET users listing. */
 router.post('/getpaten', checkAuth, function (req, res, next) {
-  PatenSchema.findAndCountAll()
+  PatenSchema.findAndCountAll({
+    attributes: ['no_urut'],
+  })
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -101,39 +103,6 @@ router.post('/getpatenbyyear', checkAuth, function (req, res, next) {
     });
 });
 
-router.post('/getpatendiajukan', checkAuth, function (req, res, next) {
-  let validate = Joi.object().keys({
-    userId: Joi.string().required()
-  });
-
-  let payload = {
-    userId: req.body.userId,
-  }
-  const userId = req.body.userId
-
-  PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = 19 AND a.KODE_INPUT = ' + userId + ' ')
-    .then((data) => {
-      if (data.length < 1) {
-        res.status(404).json({
-          message: 'Not Found',
-        });
-      }
-      else {
-        // console.log(data[0][0].tahun)
-        res.status(200).json({
-          data
-        })
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-        status: 500
-      });
-    });
-});
-
 router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     userId: Joi.number().required(),
@@ -152,7 +121,7 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   const status = req.body.status;
 
   if (role_id == 18) {
-    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
+    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
