@@ -53,9 +53,7 @@ const upload = multer({
 
 /* GET users listing. */
 router.post('/getpaten', checkAuth, function (req, res, next) {
-  PatenSchema.findAndCountAll({
-    attributes: ['no_urut'],
-  })
+  PatenSchema.findAndCountAll()
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
