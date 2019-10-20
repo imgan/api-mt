@@ -10,7 +10,39 @@ const router = express.Router();
 /* GET users listing. */
 
 router.post('/getcodepb', checkAuth, function (req, res, next) {
-  ipmancodeSchema.findAndCountAll()
+  ipmancodeSchema.findAndCountAll({
+    where: {
+      id_jenis: 24
+    }
+  })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/getcodeps', checkAuth, function (req, res, next) {
+  ipmancodeSchema.findAndCountAll({
+    where: {
+      id_jenis: 25
+    }
+  })
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({

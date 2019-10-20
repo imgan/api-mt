@@ -11,10 +11,10 @@ const mspaten = sequelize.define("mspaten", {
         type: Sequelize.STRING,
     },
     abstrak: {
-        type: Sequelize.STRING,
+        type: Sequelize.BLOB,
     },
     gambar: {
-        type: Sequelize.STRING,
+        type: Sequelize.BLOB,
         allowNull: true,
     },
     jenis_paten: {

@@ -137,7 +137,6 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
 
   let validate = Joi.object().keys({
     judul: Joi.string().required(),
-    abstrak: Joi.string().required(),
     jenis_paten: Joi.string().required(),
     unit_kerja: Joi.string().required(),
     bidang_invensi: Joi.string().required(),
@@ -149,8 +148,6 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
 
   let payload = {
     judul: req.body.judul,
-    abstrak: req.body.abstrak,
-    // gambar: req.body.gambar,
     jenis_paten: req.body.jenis_paten,
     unit_kerja: req.body.unit_kerja,
     bidang_invensi: req.body.bidang_invensi,
@@ -165,9 +162,10 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
       try {
         const schema = {
           judul,
-          abstrak,
           jenis_paten,
           unit_kerja,
+          abstrak,
+          gambar,
           bidang_invensi,
           status,
           no_handphone,
@@ -199,49 +197,22 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
     })
 });
 
-// router.post('/addfile', upload.single('path'),checkAuth, async function (req, res, next) {
-//   try {
-//     const schema = {
-//       gambar: req.file.path,
-//       abstrak: req.file.abstrak
-//     }
-//     try {
-//       const paten = PatenSchema.create(schema)
-//         .then(result => res.status(201).json({
-//           status: 201,
-//           messages: 'Gambar berhasil ditambahkan',
-//         }));
-//     } catch (error) {
-//       res.status(400).json({
-//         'status': 'ERROR',
-//         'messages': error.message,
-//         'data': {},
-//       })
-//     }
-//   }
-//   catch (err) {
-//     res.status(400).json({
-//       'status': 'ERROR',
-//       'messages': err.message,
-//       'data': {},
-//     })
-//   }
-// });
-
-router.post('/addfile', function (req, res, next) {
+router.post('/adddokumen', checkAuth , function (req, res, next) {
   try {
-    const path = './public/images/' + Date.now() + '.txt';
-    const imgdata = req.body.image;
-    let base64Image = imgdata.split(';base64,').pop();
-    fs.writeFileSync(path, base64Image,  {encoding: 'base64'});
     try {
       const schema = {
-        gambar: path
+        nomor_pendaftar : req.body.nomor_pendaftar,
+        dokumen: req.body.dokumen,
+        name: req.body.name,
+        type: req.body.type,
+        role: req.body.role,
+        jenis_dokumen: req.body.jenis_dokumen,
+        downloadable : req.body.downloadable
       }
       const paten = PatenSchema.create(schema)
         .then(result => res.status(201).json({
           status: 201,
-          messages: 'Gambar berhasil ditambahkan',
+          messages: 'Dokumen berhasil ditambahkan',
         }));
     } catch (error) {
       res.status(400).json({
@@ -259,6 +230,5 @@ router.post('/addfile', function (req, res, next) {
     })
   }
 });
-
 
 module.exports = router;

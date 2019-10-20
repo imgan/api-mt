@@ -14,11 +14,14 @@ const msdokumen = sequelize.define("msdokumen", {
   name: {
     type: Sequelize.STRING,
   },
+  dokumen: {
+    type: Sequelize.BLOB,
+  },
   size: {
-    type: Sequelize.INTEGER
+    type: Sequelize.FLOAT
   },
   type: {
-    type: Sequelize.INTEGER
+    type: Sequelize.STRING
   },
   rev: {
     type: Sequelize.INTEGER
