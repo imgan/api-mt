@@ -122,4 +122,42 @@ router.post('/addcode', checkAuth, async function (req, res, next) {
     })
 });
 
+router.post('/updatenourut', checkAuth, async function (req, res, next) {
+  ipmancodeSchema.findAll({
+    attributes: ['no_urut'],
+    where: {
+      kode: req.body.kode
+    }
+  }).then((last_no) => {
+    // console.log(last_no[0].no_urut)
+    ipmancodeSchema.update({
+      no_urut: last_no[0].no_urut+1,
+    }, {
+      where: {
+        kode: req.body.kode
+      }
+    })
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data,
+          })
+        }
+        // });x
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+          status: 500,
+          data: no_urut
+        });
+      });
+  })
+});
 module.exports = router;

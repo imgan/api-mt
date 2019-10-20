@@ -44,14 +44,14 @@ router.post('/getpegawai', checkAuth, function (req, res, next) {
     })
 });
 
-router.put('/updatepegawai/:id', checkAuth, function (req, res, next) {
+router.post('/updatepegawai', checkAuth, function (req, res, next) {
     PegawaiSchema.update({
         kode_kepegawaian: req.body.kode_kepegawaian,
         nama :  req.body.nama,
-        nik : req.body.nik
+        nik : req.body.nik,
     },{
         where:{
-            id: req.params.id
+            id: req.body.id
         }
     }).then(data => {
         console.log(req.params.id);
