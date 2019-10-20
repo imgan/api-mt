@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require('express');
 const sequelize = require('sequelize');
 const PatenSchema = require('../model/mspaten');
+const DokumenSchema = require('../model/msdokumen');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
@@ -209,7 +210,7 @@ router.post('/adddokumen', checkAuth , function (req, res, next) {
         jenis_dokumen: req.body.jenis_dokumen,
         downloadable : req.body.downloadable
       }
-      const paten = PatenSchema.create(schema)
+      const paten = DokumenSchema.create(schema)
         .then(result => res.status(201).json({
           status: 201,
           messages: 'Dokumen berhasil ditambahkan',
