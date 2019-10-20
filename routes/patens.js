@@ -144,7 +144,7 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
         });
       });
   } else {
-    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
+    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
