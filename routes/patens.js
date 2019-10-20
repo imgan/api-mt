@@ -123,7 +123,7 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   const status = req.body.status;
 
   if (role_id == 18) {
-    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
+    PatenSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -144,7 +144,7 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
         });
       });
   } else {
-    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
+    PatenSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
