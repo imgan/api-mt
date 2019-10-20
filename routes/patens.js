@@ -134,10 +134,12 @@ router.post('/getpatendiajukan', checkAuth, function (req, res, next) {
     });
 });
 
-router.post('/getpatendraft', checkAuth, function (req, res, next) {
+router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     userId: Joi.number().required(),
-    role_id: Joi.number().required()
+    role_id: Joi.number().required(),
+    status : Joi.number().required()
+
   });
 
   let payload = {
@@ -147,8 +149,10 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
   }
   const userId = req.body.userId;
   const role_id = req.body.role_id;
-  if (role_id === 18) {
-    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = 19 AND a.KODE_INPUT = ' + userId + ' ')
+  const status = req.body.status;
+
+  if (role_id == 18) {
+    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -156,7 +160,6 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
           });
         }
         else {
-          // console.log(data[0][0].tahun)
           res.status(200).json({
             data,
           })
@@ -170,7 +173,7 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
         });
       });
   } else {
-    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = 19')
+    PatenSchema.sequelize.query('SELECT a.judul,a.id,a.createdAt,b.keterangan,b.NAMA_REV FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -181,7 +184,6 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
           // console.log(data[0][0].tahun)
           res.status(200).json({
             data,
-            role_id
 
           })
         }
