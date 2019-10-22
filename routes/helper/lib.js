@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require('express');
 const ipmancodeSchema = require('../../model/msipmancode');
+const DokumenSchema = require('../../model/msdokumen');
+
 const checkAuth = require('../../middleware/check-auth');
 
 
@@ -158,6 +160,51 @@ router.post('/updatenourut', checkAuth, async function (req, res, next) {
           data: no_urut
         });
       });
+  })
+});
+
+
+router.post('/adddokumen', checkAuth, function (req, res, next) {
+
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+    dokumen: Joi.string().required(),
+    name: Joi.string().required(),
+    type: Joi.string().required(),
+    role: Joi.number().required(),
+    jenis_dokumen: Joi.number().required(),
+    downloadable: Joi.number().required(),
+  });
+
+  const payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+    dokumen: req.body.dokumen,
+    name: req.body.name,
+    type: req.body.type,
+    role: req.body.role,
+    jenis_dokumen: req.body.jenis_dokumen,
+    downloadable: req.body.downloadable
+  }
+  Joi.validate(payload, validate, (error) => {
+    try {
+      const paten = DokumenSchema.create(payload)
+        .then(result => res.status(201).json({
+          status: 201,
+          messages: 'Dokumen berhasil ditambahkan',
+        }));
+    } catch (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+        'data': {},
+      })
+    }
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
   })
 });
 module.exports = router;
