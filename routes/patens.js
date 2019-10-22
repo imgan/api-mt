@@ -55,7 +55,7 @@ const upload = multer({
 router.post('/getpaten', checkAuth, function (req, res, next) {
   PatenSchema.findAndCountAll({
     attributes: {
-      exclude: ['gambar','abstrak']
+      exclude: ['gambar', 'abstrak']
     }
   })
     .then((data) => {
@@ -109,15 +109,13 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     userId: Joi.number().required(),
     role_id: Joi.number().required(),
-    status : Joi.number().required()
-
   });
 
   let payload = {
     userId: req.body.userId,
     role_id: req.body.role_id,
-
   }
+
   const userId = req.body.userId;
   const role_id = req.body.role_id;
   const status = req.body.status;
@@ -137,7 +135,6 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
         }
       })
       .catch((err) => {
-        console.log(err);
         res.status(500).json({
           error: err,
           status: 500
@@ -152,10 +149,8 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
           });
         }
         else {
-          // console.log(data[0][0].tahun)
           res.status(200).json({
             data,
-
           })
         }
       })
@@ -193,59 +188,53 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
     kode_input: req.body.kode_input
   }
 
-  Joi.validate(payload, validate)
-    .then(validated => {
-      try {
-        const schema = {
-          judul,
-          jenis_paten,
-          unit_kerja,
-          abstrak,
-          gambar,
-          bidang_invensi,
-          status,
-          no_handphone,
-          ipman_code,
-          kode_input
-        } = req.body;
-        try {
-          const paten = PatenSchema.create(schema)
-            .then(result => res.status(201).json({
-              status: 201,
-              messages: 'Paten berhasil ditambahkan',
-              id: result.id,
-            }));
-        } catch (error) {
-          res.status(400).json({
-            'status': 'ERROR',
-            'messages': error.message,
-            'data': {},
-          })
-        }
-      }
-      catch (err) {
-        res.status(400).json({
-          'status': 'ERROR',
-          'messages': err.message,
-          'data': {},
-        })
-      }
-    })
+  Joi.validate(payload, validate, (error) => {
+    try {
+      const paten = PatenSchema.create(payload)
+        .then(result => res.status(201).json({
+          status: 201,
+          messages: 'Paten berhasil ditambahkan',
+          id: result.id,
+        }));
+    } catch (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+  })
 });
 
 router.post('/adddokumen', checkAuth, function (req, res, next) {
-  try {
+
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+    dokumen: Joi.string().required(),
+    name: Joi.string().required(),
+    type: Joi.string().required(),
+    role: Joi.number().required(),
+    jenis_dokumen: Joi.number().required(),
+    downloadable: Joi.number().required(),
+  });
+
+  const payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+    dokumen: req.body.dokumen,
+    name: req.body.name,
+    type: req.body.type,
+    role: req.body.role,
+    jenis_dokumen: req.body.jenis_dokumen,
+    downloadable: req.body.downloadable
+  }
+  Joi.validate(payload, validate, (error) => {
     try {
-      const schema = {
-        nomor_pendaftar: req.body.nomor_pendaftar,
-        dokumen: req.body.dokumen,
-        name: req.body.name,
-        type: req.body.type,
-        role: req.body.role,
-        jenis_dokumen: req.body.jenis_dokumen,
-        downloadable: req.body.downloadable
-      }
-      const paten = DokumenSchema.create(schema)
+      const paten = DokumenSchema.create(payload)
         .then(result => res.status(201).json({
           status: 201,
           messages: 'Dokumen berhasil ditambahkan',
@@ -257,14 +246,13 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
         'data': {},
       })
     }
-  }
-  catch (err) {
-    res.status(400).json({
-      'status': 'ERROR',
-      'messages': err.message,
-      'data': {},
-    })
-  }
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+  })
 });
 
 module.exports = router;

@@ -58,45 +58,30 @@ router.post('/addmerek', checkAuth, async function (req, res, next) {
     kelas: req.body.kelas,
   }
 
-  Joi.validate(payload, validate)
-    .then(validated => {
-      try {
-        const schema = {
-          judul,
-          unit_kerja,
-          status,
-          no_handphone,
-          ipman_code,
-          kode_input,
-          kelas,
-        } = req.body;
-        try {
-          const paten = MerekSchema.create(schema)
-            .then(result => res.status(201).json({
-              status: 201,
-              messages: 'Merek berhasil ditambahkan',
-              id: result.id,
-            }));
-        } catch (error) {
-          res.status(400).json({
-            'status': 'ERROR',
-            'messages': error.message,
-            'data': {},
-          })
-        }
-      }
-      catch (err) {
-        res.status(400).json({
-          'status': 'ERROR',
-          'messages': err.message,
-          'data': {},
-        })
-      }
-    })
+  Joi.validate(payload, validate, (error) => {
+    try {
+      const paten = MerekSchema.create(payload)
+        .then(result => res.status(201).json({
+          status: 201,
+          messages: 'Merek berhasil ditambahkan',
+          id: result.id,
+        }));
+    } catch (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error,
+        'data': {},
+      })
+    }
+    if (error) {
+      res.status(400).json({
+        messages: error.message
+      })
+    }
+  })
 });
 
 router.post('/adddmerek', checkAuth, async function (req, res, next) {
-
   let validate = Joi.object().keys({
     id_merek: Joi.number().required(),
     nik: Joi.number().required(),
@@ -107,35 +92,31 @@ router.post('/adddmerek', checkAuth, async function (req, res, next) {
     nik: req.body.nik,
   }
 
-  Joi.validate(payload, validate)
-    .then(validated => {
-      try {
-        const schema = {
-          id_merek: req.body.id_merek,
-          nik: req.body.nik,
-        } = req.body;
-        try {
-          const paten = MerekSchema.create(schema)
-            .then(result => res.status(201).json({
-              status: 201,
-              messages: 'Merek berhasil ditambahkan',
-              id: result.id,
-            }));
-        } catch (error) {
-          res.status(400).json({
-            'status': 'ERROR',
-            'messages': error.message,
-            'data': {},
-          })
-        }
-      }
-      catch (err) {
-        res.status(400).json({
-          'status': 'ERROR',
-          'messages': err.message,
-          'data': {},
-        })
-      }
-    })
-});
+  Joi.validate(payload, validate, (error) => {
+    const schema = {
+      id_merek: req.body.id_merek,
+      nik: req.body.nik,
+    } = req.body;
+    try {
+      const dmerek = DmerekSchema.create(schema)
+        .then(result => res.status(201).json({
+          status: 201,
+          messages: 'DMerek berhasil ditambahkan',
+          id: result.id,
+        }));
+    } catch (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error,
+        'data': {},
+      })
+    }
+    if (error) {
+      res.status(400).json({
+        messages: error.message
+      })
+    }
+  })
+})
+
 module.exports = router;
