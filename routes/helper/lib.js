@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require('express');
 const ipmancodeSchema = require('../../model/msipmancode');
 const DokumenSchema = require('../../model/msdokumen');
+const Joi = require('joi');
+
 
 const checkAuth = require('../../middleware/check-auth');
 
