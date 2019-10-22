@@ -26,7 +26,7 @@ const msdesainindustri = sequelize.define("msdesainindustri", {
     pernah_diajukan: {
         type: Sequelize.INTEGER,
     },
-    tahun_pendaftaran : {
+    tahun_pendaftar : {
         type: Sequelize.STRING,
     },
     tahun_granted : {

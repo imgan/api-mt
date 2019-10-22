@@ -43,6 +43,8 @@ const msipmancodeModel = require('./model/msipmancode');
 const dpatenmodel = require('./model/msdpaten');
 const msdokumen = require('./model/msdokumen');
 const msdmerek = require('./model/msdmerek');
+const msdhakcipta = require('./model/msdhakcipta');
+
 
 
 var app = express();
@@ -71,6 +73,7 @@ app.use('/lib', msipmancodeRouter);
 app.use('/patens', dpatenRouter);
 app.use('/dokumen', dokumenRouter);
 app.use('/mereks', dmerekRouter);
+
 
 app.use('/public', express.static(__dirname + '/public'));
 
