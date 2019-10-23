@@ -3,6 +3,9 @@ require("dotenv").config();
 const express = require('express');
 const sequelize = require('sequelize');
 const PatenSchema = require('../model/mspaten');
+const dPatenSchema = require('../model/msdpaten');
+const pegawaiSchema = require('../model/mspegawai');
+const nonpegawaiSchema = require('../model/msnonpegawai');
 const DokumenSchema = require('../model/msdokumen');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
@@ -52,6 +55,54 @@ const upload = multer({
 });
 
 /* GET users listing. */
+router.post('/getinventor', checkAuth, function (req, res, next) {
+  dPatenSchema.sequelize.query('SELECT DISTINCT `dpatens`.*,`mspegawais`.`NIK`,`mspegawais`.`NAMA` FROM `dpatens` JOIN `mspegawais` ON `dpatens`.`NIK` = `mspegawais`.`NIK`')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/getnoninventor', checkAuth, function (req, res, next) {
+  dPatenSchema.sequelize.query('SELECT DISTINCT `dpatens`.*,`msnonpegawais`.`NIK`,`msnonpegawais`.`NAMA` FROM `dpatens` JOIN `msnonpegawais` ON `dpatens`.`NIK` = `msnonpegawais`.`NIK`')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 router.post('/getpaten', checkAuth, function (req, res, next) {
   PatenSchema.findAndCountAll({
     attributes: {
