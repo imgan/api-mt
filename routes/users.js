@@ -106,7 +106,7 @@ router.post('/login', (req, res) => {
       bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
         console.log(hash);
         // Store hash in database
-        UserSchema.sequelize.query('SELECT a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrev b on a.role_id = b.id where a.email = "' +req.body.email+'" ',
+        UserSchema.sequelize.query('SELECT a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrevs b on a.role_id = b.id where a.email = "' +req.body.email+'" ',
           { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT }})
           .then((user) => {
             if (user[0].length < 1) {
