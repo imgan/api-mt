@@ -44,7 +44,7 @@ const mspaten = sequelize.define("mspaten", {
     ipman_code: {
         type: Sequelize.STRING,
     },
-    nomor_permohononan: {
+    nomor_permohonan: {
         type: Sequelize.STRING,
     },
     sertifikasi: {
@@ -60,6 +60,9 @@ const mspaten = sequelize.define("mspaten", {
         type: Sequelize.DATE,
     },
     pemberian: {
+        type: Sequelize.DATE,
+    },
+    pembayaran: {
         type: Sequelize.DATE,
     },
     nomor_paten: {

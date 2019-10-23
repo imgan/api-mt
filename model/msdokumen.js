@@ -41,6 +41,9 @@ const msdokumen = sequelize.define("msdokumen", {
   kode_input: {
     type: Sequelize.STRING
   },
+  kode_ubah: {
+    type: Sequelize.INTEGER
+  },
   tgl_ubah: {
     type: Sequelize.DATE
   },
