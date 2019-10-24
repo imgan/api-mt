@@ -307,13 +307,18 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
 });
 
 router.post('/getpatendraft', checkAuth, function (req, res, next) {
-  PatenSchema.sequelize.query({
-    query: 'SELECT mp.*,dp.*, mpg.* FROM mspatens mp JOIN dpatens dp ON mp.id = dp.id_paten JOIN mspegawais mpg ON dp.nik = mpg.nik ',
-    })
-  // PatenSchema.findAndCountAll({
-  //   query: 'SELECT mp.*,dp.*, mpg.* FROM mspatens mp JOIN dpatens dp ON mp.id = dp.id_paten JOIN mspegawais mpg ON dp.nik = mpg.nik ',
-  //   })
-    .then((data) => {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    PatenSchema.sequelize.query({
+      query: "SELECT mp.*,dp.*, mpg.* FROM mspatens mp JOIN dpatens dp ON mp.id = dp.id_paten JOIN mspegawais mpg ON dp.nik = mpg.nik where mp.id = " + req.body.id + " ",
+    }).then((data) => {
       if (data.length < 1) {
         res.status(404).json({
           message: 'Not Found',
@@ -326,13 +331,47 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
       }
       // });x
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-        status: 500
-      });
-    });
-});
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+  });
+})
+
+router.post('/getinventorid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    PatenSchema.sequelize.query({
+      query: "SELECT DISTINCT * FROM `dpatens` WHERE id_paten = " + req.body.id + "",
+    }).then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 module.exports = router;
