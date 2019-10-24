@@ -306,4 +306,33 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
   })
 });
 
+router.post('/getpatendraft', checkAuth, function (req, res, next) {
+  PatenSchema.sequelize.query({
+    query: 'SELECT mp.*,dp.*, mpg.* FROM mspatens mp JOIN dpatens dp ON mp.id = dp.id_paten JOIN mspegawais mpg ON dp.nik = mpg.nik ',
+    })
+  // PatenSchema.findAndCountAll({
+  //   query: 'SELECT mp.*,dp.*, mpg.* FROM mspatens mp JOIN dpatens dp ON mp.id = dp.id_paten JOIN mspegawais mpg ON dp.nik = mpg.nik ',
+  //   })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 module.exports = router;
