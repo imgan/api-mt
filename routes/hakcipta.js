@@ -59,6 +59,31 @@ router.post('/getpencipta', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getnonpencipta', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from dhakcipta dp JOIN msnonpegawais mp ON dp.nik = mp.nik')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+
 router.post('/addhakcipta', checkAuth, async function (req, res, next) {
 
   let validate = Joi.object().keys({
