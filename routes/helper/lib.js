@@ -126,6 +126,45 @@ router.post('/addcode', checkAuth, async function (req, res, next) {
     })
 });
 
+
+router.post('/getcode', checkAuth, async function (req, res, next) {
+
+  let validate = Joi.object().keys({
+    kode: Joi.string().required(),
+  });
+
+  let payload = {
+    kode: req.body.kode,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+      ipmancodeSchema.findAndCountAll({
+        where: {
+          kode: req.body.kode,
+        }
+      })
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+        // });x
+      })
+      if (error) {
+        res.status(400).json({
+          messages: error.message
+        })
+      }
+  })
+
+});
+
 router.post('/updatenourut', checkAuth, async function (req, res, next) {
   ipmancodeSchema.findAll({
     attributes: ['no_urut'],
@@ -135,7 +174,7 @@ router.post('/updatenourut', checkAuth, async function (req, res, next) {
   }).then((last_no) => {
     // console.log(last_no[0].no_urut)
     ipmancodeSchema.update({
-      no_urut: last_no[0].no_urut+1,
+      no_urut: last_no[0].no_urut + 1,
     }, {
       where: {
         kode: req.body.kode
@@ -170,7 +209,7 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
 
   let validate = Joi.object().keys({
     nomor_pendaftar: Joi.string().required(),
-    dokumen: Joi.string().required(),
+    // dokumen: Joi.string().required(),
     name: Joi.string().required(),
     type: Joi.string().required(),
     role: Joi.number().required(),
@@ -180,7 +219,7 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
 
   const payload = {
     nomor_pendaftar: req.body.nomor_pendaftar,
-    dokumen: req.body.dokumen,
+    // dokumen: req.body.dokumen,
     name: req.body.name,
     type: req.body.type,
     role: req.body.role,
