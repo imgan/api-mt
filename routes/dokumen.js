@@ -32,11 +32,24 @@ router.post('/adddokumen', checkAuth, async function (req, res, next) {
         type: req.body.type,
     }
 
+    let schema = {
+        nomor_pendaftar: req.body.nomor_pendaftar,
+        name: req.body.name,
+        downloadable: req.body.downloadable,
+        size: req.body.size,
+        role: req.body.role,
+        jenis_dokumen: req.body.jenis_dokumen,
+        tgl_input: req.body.tgl_input,
+        kode_input: req.body.kode_input,
+        type: req.body.type,
+        dokumen : req.body.dokumen
+    }
+
     Joi.validate(payload, validate)
         .then(validated => {
             try {
                 try {
-                    const Dokumen = DokumenSchema.create(payload);
+                    const Dokumen = DokumenSchema.create(schema);
                     if (Dokumen) {
                         res.status(201).json({
                             status: 201,

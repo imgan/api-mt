@@ -60,9 +60,21 @@ router.post('/adddesainindustri', checkAuth, async function (req, res, next) {
     tgl_input: req.body.tgl_input,
   }
 
+  let schema = {
+    judul: req.body.judul,
+    unit_kerja: req.body.unit_kerja,
+    status: req.body.status,
+    no_handphone: req.body.no_handphone,
+    ipman_code: req.body.ipman_code,
+    kode_input: req.body.kode_input,
+    tgl_input: req.body.tgl_input,
+    abstrak : req.body.abstrak,
+    gambar : req.body.gambar
+  }
+
   Joi.validate(payload, validate, (error) => {
     try {
-      const paten = desainSchema.create(payload)
+      const paten = desainSchema.create(schema)
         .then(result => res.status(201).json({
           status: 201,
           messages: 'Desain Industri berhasil ditambahkan',
