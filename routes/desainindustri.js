@@ -235,4 +235,48 @@ router.post('/getpendesain', checkAuth, function (req, res, next) {
       });
     });
 });
+
+
+router.post('/deletedraft', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    desainSchema.destroy({
+      where: {
+        id: req.body.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            stataus: 404,
+            message: 'Not Found',
+          });
+        }
+        ddesainSchema.destroy({
+          where: {
+            id_desain_industri: req.body.id,
+          }
+        })
+        res.status(200).json(
+          {
+            stataus: 200,
+            message: 'Delete Succesfully'
+          }
+        )
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 module.exports = router;
