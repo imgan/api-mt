@@ -35,6 +35,65 @@ router.post('/getmerek', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getmerekstatus', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    userId: Joi.number().required(),
+    role_id: Joi.number().required(),
+  });
+
+  let payload = {
+    userId: req.body.userId,
+    role_id: req.body.role_id,
+  }
+
+  const userId = req.body.userId;
+  const role_id = req.body.role_id;
+  const status = req.body.status;
+
+  if (role_id == 18) {
+    MerekSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN msmereks a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data,
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+  } else {
+    MerekSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN msmereks a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data,
+          })
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+  }
+});
+
 
 router.post('/addmerek', checkAuth, async function (req, res, next) {
 

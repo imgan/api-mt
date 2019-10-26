@@ -11,9 +11,9 @@ const router = express.Router();
 
 /* GET users listing. */
 router.post('/', checkAuth, function (req, res, next) {
-    if (req.body.golongan > 0 ) {
+    if (req.body.golongan > 0) {
         rev.findAndCountAll({
-            where:{
+            where: {
                 golongan: req.body.golongan
             }
         })
@@ -62,4 +62,23 @@ router.post('/', checkAuth, function (req, res, next) {
 
 });
 
+router.post('/getrevbyid', checkAuth, function (req, res, next) {
+    rev.findAndCountAll({
+        where: {
+            id: req.body.id
+        }
+    })
+        .then((data) => {
+            if (data.length < 1) {
+                res.status(404).json({
+                    message: 'Not Found',
+                });
+            }
+            else {
+                res.status(200).json({
+                    data
+                })
+            }
+        })
+});
 module.exports = router;

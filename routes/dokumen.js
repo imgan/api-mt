@@ -42,7 +42,7 @@ router.post('/adddokumen', checkAuth, async function (req, res, next) {
         tgl_input: req.body.tgl_input,
         kode_input: req.body.kode_input,
         type: req.body.type,
-        dokumen : req.body.dokumen
+        dokumen: req.body.dokumen
     }
 
     Joi.validate(payload, validate)
@@ -77,5 +77,54 @@ router.post('/adddokumen', checkAuth, async function (req, res, next) {
 });
 
 
+router.post('/getdokumenbyipman', checkAuth, function (req, res, next) {
+    let validate = Joi.object().keys({
+        code: Joi.string().required(),
+    });
+
+    const payload = {
+        code: req.body.code,
+    }
+
+    Joi.validate(payload, validate, (error) => {
+        DokumenSchema.sequelize.query({
+            query: "SELECT "+
+            "a.id,"+
+            "a.nomor_pendaftar,"+
+            "a.name,"+
+            "a.size,"+
+            "a.rev,"+
+            "a.role,"+
+            "a.rev,"+
+            "a.downloadable, "+
+            "a.tgl_input, "+
+            "a.kode_input, "+
+            "a.tgl_ubah, "+
+            "a.kode_ubah, "+
+            "x.* "+
+            "FROM msdokumens a "+
+            "JOIN msjenisdokumens x ON a.jenis_dokumen = x.id "+
+            "WHERE a.nomor_pendaftar = '"+req.body.code + "' AND a.role = 1 "+
+            "GROUP BY a.jenis_dokumen",
+        }).then((data) => {
+            if (data.length < 1) {
+                res.status(404).json({
+                    message: 'Not Found',
+                });
+            }
+            else {
+                res.status(200).json({
+                    data
+                })
+            }
+        })
+        if (error) {
+            res.status(400).json({
+                'status': 'ERROR',
+                'messages': error.message,
+            })
+        }
+    });
+})
 
 module.exports = router;

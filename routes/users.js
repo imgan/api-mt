@@ -5,13 +5,37 @@ const UserSchema = require('../model/muser');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
-
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
+router.post('/getalluser',checkAuth, function (req, res, next) {
+  UserSchema.findAndCountAll({
+    attributes: {
+      exclude: ['gambar', 'abstrak']
+    }
+  })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
 });
 
 router.post('/register', async function (req, res, next) {
@@ -106,8 +130,8 @@ router.post('/login', (req, res) => {
       bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
         console.log(hash);
         // Store hash in database
-        UserSchema.sequelize.query('SELECT a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrevs b on a.role_id = b.id where a.email = "' +req.body.email+'" ',
-          { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT }})
+        UserSchema.sequelize.query('SELECT a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrevs b on a.role_id = b.id where a.email = "' + req.body.email + '" ',
+          { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT } })
           .then((user) => {
             if (user[0].length < 1) {
               res.status(401).json({
@@ -124,16 +148,16 @@ router.post('/login', (req, res) => {
                 res.status(200).json({
                   message: 'Success',
                   status: 200,
-                  user_id : users[0].id,
-                  email : users[0].email,
+                  user_id: users[0].id,
+                  email: users[0].email,
                   role: users[0].role_id,
-                  is_active : users[0].is_active,
-                  name : users[0].name,
-                  image : users[0].image,
-                  nama_rev : users[0].nama_rev,
-                  status_rev : users[0].status,
-                  keterangan : users[0].keterangan,
-                  golongan : users[0].golongan,
+                  is_active: users[0].is_active,
+                  name: users[0].name,
+                  image: users[0].image,
+                  nama_rev: users[0].nama_rev,
+                  status_rev: users[0].status,
+                  keterangan: users[0].keterangan,
+                  golongan: users[0].golongan,
                   token: token,
                 });
               });

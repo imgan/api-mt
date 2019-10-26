@@ -4,14 +4,121 @@ const express = require('express');
 const ipmancodeSchema = require('../../model/msipmancode');
 const DokumenSchema = require('../../model/msdokumen');
 const Joi = require('joi');
-
-
+const multer = require('multer');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const getDirName = require('path').dirname;
 const checkAuth = require('../../middleware/check-auth');
 
 
 const router = express.Router();
 
 /* GET users listing. */
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/images');
+  },
+  filename: (req, file, cb) => {
+    var filetype = '';
+    if (file.mimetype === 'image/gif') {
+      filetype = 'gif';
+    }
+    if (file.mimetype === 'image/png') {
+      filetype = 'png';
+    }
+    if (file.mimetype === 'application/pdf') {
+      filetype = 'pdf';
+    }
+    if (file.mimetype === 'image/jpeg') {
+      filetype = 'jpg';
+    }
+    if (file.mimetype === 'text/plain') {
+      filetype = 'txt';
+    }
+    cb(null, 'file-' + Date.now() + '.' + filetype);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'text/plain' || file.mimetype === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
+
+
+router.post('/adddokumen', checkAuth, function (req, res, next) {
+  var base64Data = req.body.dokumen;
+
+  require("fs").writeFileSync(`./public/file/${req.body.name}`, base64Data, 'base64', function (error , data) {
+    console.log('File Berhasil Di generate');
+  });
+
+  // console.log(encode_image);
+
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+    // dokumen: Joi.string().required(),
+    name: Joi.string().required(),
+    type: Joi.string().required(),
+    role: Joi.number().required(),
+    jenis_dokumen: Joi.number().required(),
+    downloadable: Joi.number().required(),
+  });
+
+  const payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+    // dokumen: req.body.dokumen,
+    name: req.body.name,
+    type: req.body.type,
+    role: req.body.role,
+    jenis_dokumen: req.body.jenis_dokumen,
+    downloadable: req.body.downloadable
+  }
+
+  const schema = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+    // dokumen: req.body.dokumen,
+    name: req.body.name,
+    type: req.body.type,
+    role: req.body.role,
+    jenis_dokumen: req.body.jenis_dokumen,
+    downloadable: req.body.downloadable
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    try {
+      const paten = DokumenSchema.create(schema)
+        .then(result => res.status(201).json({
+          status: 201,
+          messages: 'Dokumen berhasil ditambahkan',
+        }));
+    } catch (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+        'data': {},
+      })
+    }
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+  })
+});
 
 router.post('/getcodepb', checkAuth, function (req, res, next) {
   ipmancodeSchema.findAndCountAll({
@@ -138,11 +245,11 @@ router.post('/getcode', checkAuth, async function (req, res, next) {
   }
 
   Joi.validate(payload, validate, (error) => {
-      ipmancodeSchema.findAndCountAll({
-        where: {
-          kode: req.body.kode,
-        }
-      })
+    ipmancodeSchema.findAndCountAll({
+      where: {
+        kode: req.body.kode,
+      }
+    })
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -156,11 +263,11 @@ router.post('/getcode', checkAuth, async function (req, res, next) {
         }
         // });x
       })
-      if (error) {
-        res.status(400).json({
-          messages: error.message
-        })
-      }
+    if (error) {
+      res.status(400).json({
+        messages: error.message
+      })
+    }
   })
 
 });
@@ -205,47 +312,4 @@ router.post('/updatenourut', checkAuth, async function (req, res, next) {
 });
 
 
-router.post('/adddokumen', checkAuth, function (req, res, next) {
-
-  let validate = Joi.object().keys({
-    nomor_pendaftar: Joi.string().required(),
-    // dokumen: Joi.string().required(),
-    name: Joi.string().required(),
-    type: Joi.string().required(),
-    role: Joi.number().required(),
-    jenis_dokumen: Joi.number().required(),
-    downloadable: Joi.number().required(),
-  });
-
-  const payload = {
-    nomor_pendaftar: req.body.nomor_pendaftar,
-    // dokumen: req.body.dokumen,
-    name: req.body.name,
-    type: req.body.type,
-    role: req.body.role,
-    jenis_dokumen: req.body.jenis_dokumen,
-    downloadable: req.body.downloadable
-  }
-  Joi.validate(payload, validate, (error) => {
-    try {
-      const paten = DokumenSchema.create(payload)
-        .then(result => res.status(201).json({
-          status: 201,
-          messages: 'Dokumen berhasil ditambahkan',
-        }));
-    } catch (error) {
-      res.status(400).json({
-        'status': 'ERROR',
-        'messages': error.message,
-        'data': {},
-      })
-    }
-    if (error) {
-      res.status(400).json({
-        'status': 'ERROR',
-        'messages': error.message,
-      })
-    }
-  })
-});
 module.exports = router;

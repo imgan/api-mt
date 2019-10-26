@@ -15,7 +15,7 @@ const msdokumen = sequelize.define("msdokumen", {
     type: Sequelize.STRING,
   },
   dokumen: {
-    type: Sequelize.BLOB('long'),
+    type: Sequelize.STRING,
   },
   size: {
     type: Sequelize.FLOAT
