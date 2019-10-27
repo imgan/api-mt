@@ -399,7 +399,7 @@ router.post('/getpatenbyid', checkAuth, function (req, res, next) {
       .then((data) => {
         if (data === 0) {
           res.status(404).json({
-            stataus: 404,
+            status: 404,
             message: 'Not Found',
           });
         } else {
@@ -472,7 +472,7 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
       .then((data) => {
         if (data === 0) {
           res.status(404).json({
-            stataus: 404,
+            status: 404,
             message: 'Not Found',
           });
         }
@@ -489,7 +489,7 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
             })
             res.status(200).json(
               {
-                stataus: 200,
+                status: 200,
                 message: 'Delete Succesfully'
               }
             )
@@ -504,6 +504,50 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
   });
 })
 
+router.post('/ajukan', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+    status : Joi.number().required(),
+    pernah_diajukan : Joi.number().required()
+  });
+
+  const payload = {
+    id: req.body.id,
+    status : req.body.status,
+    pernah_diajukan : req.body.pernah_diajukan
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    PatenSchema.update({
+      status: payload.status,
+      pernah_diajukan: payload.pernah_diajukan,
+    },
+    {
+      where: {
+        id: payload.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        } else {
+          res.status(200).json({
+            message : 'Update diajukan Succesfully',
+            status : 200
+          })
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 router.post('/updatepatensave', checkAuth, function (req, res, next) {
 
@@ -537,7 +581,7 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
       gambar: req.body.gambar,
       bidang_invensi: req.body.bidang_invensi,
       unit_kerja: req.body.unit_kerja,
-      stataus: req.body.stataus,
+      status: req.body.status,
       no_handphone: req.body.no_handphone,
       ipman_code: req.body.ipman_code,
       kode_ubah: req.body.kode_ubah,

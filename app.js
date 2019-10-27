@@ -91,7 +91,7 @@ app.use(function(req, res, next) {
 });
 
 const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASSWORD, {
-  host: 'sql12.freemysqlhosting.net',
+  host: 'localhost',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {

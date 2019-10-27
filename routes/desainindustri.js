@@ -10,8 +10,50 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-/* GET users listing. */
-/* GET users listing. */
+router.post('/ajukan', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+    status : Joi.number().required(),
+    pernah_diajukan : Joi.number().required()
+  });
+
+  const payload = {
+    id: req.body.id,
+    status : req.body.status,
+    pernah_diajukan : req.body.pernah_diajukan
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    desainSchema.update({
+      status: payload.status,
+      pernah_diajukan: payload.pernah_diajukan,
+    },
+    {
+      where: {
+        id: payload.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        } else {
+          res.status(200).json({
+            message : 'Update diajukan Succesfully',
+            status : 200
+          })
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 router.post('/getdesain', checkAuth, function (req, res, next) {
   desainSchema.findAndCountAll()
@@ -286,9 +328,56 @@ router.post('/getdesainbyyear', checkAuth, function (req, res, next) {
       });
     });
 });
+router.post('/getallpendesain', checkAuth, function (req, res, next) {
+  ddesainSchema.sequelize.query('    SELECT DISTINCT `dmereks`.*,`mspegawais`.`nik`,`mspegawais`.`nama` FROM `dmereks` JOIN `mspegawais` ON `dmereks`.`nik` = `mspegawais`.`nik` UNION SELECT DISTINCT `dmereks`.*,`msnonpegawais`.`nik`,`msnonpegawais`.`nama` FROM `dmereks` JOIN `msnonpegawais` ON `dmereks`.`nik` = `msnonpegawais`.`nik`')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/getallnonpendesain', checkAuth, function (req, res, next) {
+  ddesainSchema.sequelize.query('    SELECT DISTINCT `dmereks`.*,`msnonpegawais`.`nik`,`msnonpegawais`.`nama` FROM `dmereks` JOIN `msnonpegawais` ON `dmereks`.`nik` = `msnonpegawais`.`nik` UNION SELECT DISTINCT `dmereks`.*,`msnonpegawais`.`nik`,`msnonpegawais`.`nama` FROM `dmereks` JOIN `msnonpegawais` ON `dmereks`.`nik` = `msnonpegawais`.`nik`')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
 
 router.post('/getpendesain', checkAuth, function (req, res, next) {
-  ddesainSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from ddesainindustris dp JOIN mspegawais mp ON dp.nik = mp.nik')
+  ddesainSchema.sequelize.query('SELECT DISTINCT `ddesainindustris`.*,`mspegawais`.`nik`,`mspegawais`.`nama` fROM `ddesainindustris` JOIN `mspegawais` ON `ddesainindustris`.`nik` = `mspegawais`.`nik`')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({

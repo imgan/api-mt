@@ -11,6 +11,51 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 /* GET users listing. */
+router.post('/ajukan', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+    status : Joi.number().required(),
+    pernah_diajukan : Joi.number().required()
+  });
+
+  const payload = {
+    id: req.body.id,
+    status : req.body.status,
+    pernah_diajukan : req.body.pernah_diajukan
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.update({
+      status: payload.status,
+      pernah_diajukan: payload.pernah_diajukan,
+    },
+    {
+      where: {
+        id: payload.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        } else {
+          res.status(200).json({
+            message : 'Update diajukan Succesfully',
+            status : 200
+          })
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
+
 router.post('/getmerekbyyear', checkAuth, function (req, res, next) {
   MerekSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
     'FROM msmereks GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
