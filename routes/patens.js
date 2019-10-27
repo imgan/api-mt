@@ -79,6 +79,43 @@ router.post('/getinventor', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getdokumenver', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+    role: Joi.number().required(),
+  });
+
+  let payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+    role: req.body.role,
+  }
+ const {nomor_pendaftar, role} = payload  
+
+  Joi.validate(payload, validate, (error) => {
+    dPatenSchema.sequelize.query("SELECT msd.*,msj.*,msj.id FROM msdokumens msd JOIN msjenisdokumens msj ON msd.jenis_dokumen = msj.id WHERE msd.nomor_pendaftar = '"+nomor_pendaftar+"' AND msd.role = '"+role+"'")
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    if(error){
+      res.status(400).json({
+        message: 'Required',
+        error
+      });
+    }
+  })
+
+});
+
 router.post('/getnoninventor', checkAuth, function (req, res, next) {
   dPatenSchema.sequelize.query('SELECT DISTINCT `dpatens`.*,`msnonpegawais`.`NIK`,`msnonpegawais`.`NAMA` FROM `dpatens` JOIN `msnonpegawais` ON `dpatens`.`NIK` = `msnonpegawais`.`NIK`')
     .then((data) => {
@@ -473,7 +510,6 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
   const payload = {
     judul: req.body.judul,
     abstrak: req.body.abstrak,
-    // gambar: req.body.gambar,
     bidang_invensi: req.body.bidang_invensi,
     unit_kerja: req.body.unit_kerja,
     status: req.body.status,
@@ -486,7 +522,6 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     judul: Joi.string().required(),
     abstrak: Joi.string().required(),
-    // gambar: Joi.string().required(),
     bidang_invensi: Joi.number().required(),
     unit_kerja: Joi.string().required(),
     status: Joi.number().required(),

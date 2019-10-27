@@ -8,9 +8,10 @@ const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
+const salt = process.env.SALT;
 
 /* GET users listing. */
-router.post('/getalluser',checkAuth, function (req, res, next) {
+router.post('/getalluser', checkAuth, function (req, res, next) {
   UserSchema.findAndCountAll({
     attributes: {
       exclude: ['gambar', 'abstrak']
@@ -125,23 +126,23 @@ router.post('/login', (req, res) => {
     email: req.body.email,
     password: req.body.password,
   }
-  Joi.validate(payload, validate)
-    .then(validated => {
-      bcrypt.hash(req.body.password, process.env.SALT, function (err, hash) {
-        console.log(hash);
-        // Store hash in database
-        UserSchema.sequelize.query('SELECT a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrevs b on a.role_id = b.id where a.email = "' + req.body.email + '" ',
-          { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT } })
-          .then((user) => {
-            if (user[0].length < 1) {
-              res.status(401).json({
-                message: 'Email atau Password Salah !!!',
-              });
-            }
-            else {
-              const users = user[0];
 
-              bcrypt.compare(hash, users[0].password, function (err, result) {
+  Joi.validate(payload, validate, (error) => {
+    bcrypt.hash(payload.password, 10, function (err, hash) {
+      // Store hash in your password DB.
+      UserSchema.sequelize.query('SELECT a.password,a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrevs b on a.role_id = b.id where a.email = "' + req.body.email + '"',
+        { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT } })
+        .then((user) => {
+          if (user[0].length < 1) {
+            res.status(401).json({
+              message: 'Email atau Password Salah !!!',
+            });
+          }
+          else {
+            const users = user[0];
+            bcrypt.compare(payload.password, users[0].password, function (error, match) {
+              // console.log()
+              if (match) {
                 const token = jwt.sign({ email: users[0].email, role: users[0].role_id, is_active: users[0].is_active }, process.env.JWTKU, {
                   expiresIn: "30d"
                 });
@@ -160,19 +161,31 @@ router.post('/login', (req, res) => {
                   golongan: users[0].golongan,
                   token: token,
                 });
-              });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: err,
-              status: 500
-            });
-          });
-      });
+              } else{
+                res.status(403).json({
+                  error : 'Email atau Password Salah !!!',
+                  status: 403
+                });
+              }
 
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: err,
+            status: 500
+          });
+        });
+      if (error) {
+        res.status(400).json({
+          message: ' Required',
+          error
+        });
+      }
     })
+  });
 });
 
 

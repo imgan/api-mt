@@ -21,6 +21,8 @@ const dokumenRouter = require('./routes/dokumen');
 const msipmancodeRouter = require('./routes/helper/lib');
 const dpatenRouter = require('./routes/dpaten');
 const dmerekRouter = require('./routes/mereks');
+const downloadRouter = require('./routes/download');
+
 
 
 
@@ -73,6 +75,8 @@ app.use('/lib', msipmancodeRouter);
 app.use('/patens', dpatenRouter);
 app.use('/dokumen', dokumenRouter);
 app.use('/mereks', dmerekRouter);
+app.use('/download', downloadRouter);
+
 
 
 app.use('/public', express.static(__dirname + '/public'));
