@@ -57,66 +57,62 @@ router.post('/register', async function (req, res, next) {
     role_id: req.body.role_id,
   }
 
-  Joi.validate(payload, validate)
-    .then(validated => {
-      try {
-        const {
-          name,
-          email,
-          password,
-          role_id,
-          is_active
-        } = req.body;
+  Joi.validate(payload, validate, (error) => {
+    try {
+      const {
+        name,
+        email,
+        password,
+        role_id,
+        is_active
+      } = req.body;
 
-        bcrypt.hash(password, 10, async function (err, hash) {
-          // Store hash in your password DB.
-          try {
-            const cek = await UserSchema.findAll({
-              where: {
-                email: req.body.email
-              }
-            })
-            if (cek.length > 0) {
-              res.status(401).json({
-                status: 401,
-                messages: 'Email Already Exist',
-              })
-            } else {
-              const users = await UserSchema.create({
-                name,
-                email,
-                password: hash,
-                role_id: req.body.role_id,
-                is_active: 3,
-              });
-              if (users) {
-                res.status(201).json({
-                  status: 200,
-                  messages: 'User berhasil ditambahkan',
-                  data: users,
-                })
-              }
-            }
-
-          } catch (error) {
-            res.status(400).json({
-              'status': 'ERROR',
-              'messages': err.message,
-              'data': {},
+      bcrypt.hash(password, 10, async function (err, hash) {
+        // Store hash in your password DB.
+        const cek = UserSchema.findAll({
+          where: {
+            email: req.body.email
+          }
+        })
+        if (cek.length > 0) {
+          res.status(401).json({
+            status: 401,
+            messages: 'Email Already Exist',
+          })
+        } else {
+          const users = await UserSchema.create({
+            name,
+            email,
+            password: hash,
+            role_id: req.body.role_id,
+            is_active: 3,
+          });
+          if (users) {
+            res.status(201).json({
+              status: 200,
+              messages: 'User berhasil ditambahkan',
+              data: users,
             })
           }
-        });
-      }
-      catch (err) {
-        res.status(400).json({
-          'status': 'ERROR',
-          'messages': err.message,
-          'data': {},
-        })
-      }
+        }
+      });
     }
-    )
-
+    catch (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+        'data': {},
+      })
+    }
+    if(error){
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+        'data': {},
+      })
+    }
+  }
+  )
 });
 
 router.post('/login', (req, res) => {
@@ -163,9 +159,9 @@ router.post('/login', (req, res) => {
                   golongan: users[0].golongan,
                   token: token,
                 });
-              } else{
+              } else {
                 res.status(403).json({
-                  error : 'Email atau Password Salah !!!',
+                  error: 'Email atau Password Salah !!!',
                   status: 403
                 });
               }

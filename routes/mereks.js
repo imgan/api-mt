@@ -11,6 +11,31 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 /* GET users listing. */
+router.post('/getmerekbyyear', checkAuth, function (req, res, next) {
+  MerekSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
+    'FROM msmereks GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        // console.log(data[0][0].tahun)
+        res.status(200).json({
+          data
+        })
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 router.post('/getmerek', checkAuth, function (req, res, next) {
   MerekSchema.findAndCountAll()
     .then((data) => {

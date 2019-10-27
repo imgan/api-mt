@@ -22,6 +22,8 @@ const msipmancodeRouter = require('./routes/helper/lib');
 const dpatenRouter = require('./routes/dpaten');
 const dmerekRouter = require('./routes/mereks');
 const downloadRouter = require('./routes/download');
+const exportRouter = require('./routes/helper/exportexcel');
+
 
 
 
@@ -76,6 +78,8 @@ app.use('/patens', dpatenRouter);
 app.use('/dokumen', dokumenRouter);
 app.use('/mereks', dmerekRouter);
 app.use('/download', downloadRouter);
+app.use('/exportexcel', exportRouter);
+
 
 
 
@@ -87,7 +91,7 @@ app.use(function(req, res, next) {
 });
 
 const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASSWORD, {
-  host: 'localhost',
+  host: 'sql12.freemysqlhosting.net',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {

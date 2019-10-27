@@ -189,11 +189,36 @@ router.post('/addhakcipta', checkAuth, async function (req, res, next) {
   })
 });
 
+router.post('/gethakciptabyyear', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
+    'FROM hakcipta GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        // console.log(data[0][0].tahun)
+        res.status(200).json({
+          data
+        })
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 router.post('/adddhakcipta', checkAuth, async function (req, res, next) {
 
   let validate = Joi.object().keys({
     id_hakcipta: Joi.number().required(),
-    nik: Joi.number().required(),
+    nik: Joi.string().required(),
   });
 
   let payload = {

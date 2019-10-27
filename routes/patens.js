@@ -169,7 +169,7 @@ router.post('/getpaten', checkAuth, function (req, res, next) {
 });
 
 router.post('/getpatenbyyear', checkAuth, function (req, res, next) {
-  PatenSchema.sequelize.query('SELECT * FROM (SELECT YEAR(TGL_INPUT) as tahun,count(*) as total ' +
+  PatenSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
     'FROM mspatens GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
     .then((data) => {
       if (data.length < 1) {
