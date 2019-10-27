@@ -8,11 +8,40 @@ const Joi = require('joi');
 const router = express.Router();
 
 /* GET listing. */
+router.post('/getnewdokver', checkAuth, function (req, res, next) {
+    if (req.body.id_role) {
+        DokumenSchema.findAndCountAll({
+            where: {
+                id_role: req.body.id_role
+            }
+        })
+            .then((data) => {
+                if (data.length < 1) {
+                    res.status(404).json({
+                        message: 'Not Found',
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        data
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    error: err,
+                    status: 500
+                });
+            });
+    }
+});
+
 router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
     if (req.body.id_haki) {
         DokumenSchema.findAndCountAll({
-            where : {
-                id_haki : req.body.id_haki
+            where: {
+                id_haki: req.body.id_haki
             }
         })
             .then((data) => {
@@ -37,8 +66,8 @@ router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
     } else if (req.body.id_haki && req.body.id_role) {
         DokumenSchema.findAndCountAll({
             where: {
-                id_haki : req.body.id_haki,
-                id_role : req.body.id_role
+                id_haki: req.body.id_haki,
+                id_role: req.body.id_role
             }
         })
             .then((data) => {
@@ -62,25 +91,25 @@ router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
             });
     } else {
         DokumenSchema.findAndCountAll()
-        .then((data) => {
-            if (data.length < 1) {
-                res.status(404).json({
-                    message: 'Not Found',
+            .then((data) => {
+                if (data.length < 1) {
+                    res.status(404).json({
+                        message: 'Not Found',
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        data
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    error: err,
+                    status: 500
                 });
-            }
-            else {
-                res.status(200).json({
-                    data
-                })
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-                error: err,
-                status: 500
             });
-        });
     }
 });
 

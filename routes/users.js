@@ -11,6 +11,8 @@ const router = express.Router();
 const salt = process.env.SALT;
 
 /* GET users listing. */
+
+
 router.post('/getalluser', checkAuth, function (req, res, next) {
   UserSchema.findAndCountAll({
     attributes: {
@@ -188,6 +190,28 @@ router.post('/login', (req, res) => {
   });
 });
 
-
+router.post('/getuserrole', checkAuth, function (req, res, next) {
+  UserSchema.sequelize.query('SELECT msusers.*, (SELECT NAMA_REV FROM msrevs WHERE id = `msusers`.`role_id`) as role, (SELECT NAMA_REV FROM msrevs WHERE id = `msusers`.`is_active`) as status FROM msusers')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
 
 module.exports = router;

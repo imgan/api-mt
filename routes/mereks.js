@@ -35,6 +35,48 @@ router.post('/getmerek', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getmerekdiajukandetail', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    status: Joi.number().required(),
+    id: Joi.number().required(),
+  });
+
+  let payload = {
+    status: req.body.status,
+    id: req.body.id,
+  }
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.sequelize.query('SELECT msm.*,msr.nama_rev FROM msrevs msr  JOIN msmereks msm ON msr.id = msm.unit_kerja WHERE msm.status = "' + req.body.status + '" AND msm.id = "' + req.body.id + '"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+        // });x
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+      if(error){
+        res.status(400).json({
+          'status': 'Required',
+          'messages': error.message,
+        })
+      }
+  })
+});
+
+
 router.post('/getmerekstatus', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     userId: Joi.number().required(),

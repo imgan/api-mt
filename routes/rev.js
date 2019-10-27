@@ -9,6 +9,28 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
+router.post('/getrolenotpengembang', checkAuth, function (req, res, next) {
+    rev.sequelize.query("SELECT id,nama_rev FROM msrevs WHERE golongan = 5 AND nama_rev != 'Pengembang'")
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+  });
+
 /* GET users listing. */
 router.post('/', checkAuth, function (req, res, next) {
     if (req.body.golongan > 0) {
