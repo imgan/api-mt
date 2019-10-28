@@ -193,6 +193,51 @@ router.post('/getpatenbyyear', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getpatendiajukandetail', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  let payload = {
+    id: req.body.id,
+  }
+  Joi.validate(payload, validate, (error) => {
+    PatenSchema.sequelize.query(
+      'SELECT `mspatens`.*,(SELECT ' +
+      'nama_rev ' +
+      ' FROM ' +
+      ' msrevs '+
+      ' WHERE '+
+       ' id = `mspatens`.`jenis_paten`) as jenis_paten, (SELECT nama_rev FROM msrevs WHERE id = `mspatens`.`unit_kerja`) as unit_kerja FROM`mspatens` WHERE`mspatens`.`status` = 20 AND`mspatens`.`id` = "'+req.body.id+'"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+        // });x
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+      if(error){
+        res.status(400).json({
+          'status': 'Required',
+          'messages': error.message,
+        })
+      }
+  })
+});
+
+
 router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     userId: Joi.number().required(),
@@ -344,7 +389,7 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
     }
   });
 })
-router.post('/getinventorid', checkAuth, function (req, res, next) {
+router.post('/getinventorbyid', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     id: Joi.number().required(),
   });
@@ -574,6 +619,7 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
     kode_ubah: Joi.string().required(),
     tgl_ubah: Joi.string().required(),
   });
+  
   Joi.validate(payload, validate, (error) => {
     PatenSchema.update({
       judul: req.body.judul,

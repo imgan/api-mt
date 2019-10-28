@@ -23,6 +23,8 @@ const dpatenRouter = require('./routes/dpaten');
 const dmerekRouter = require('./routes/mereks');
 const downloadRouter = require('./routes/download');
 const exportRouter = require('./routes/helper/exportexcel');
+const pembayaranRouter = require('./routes/pembayaran');
+
 
 
 
@@ -48,6 +50,8 @@ const dpatenmodel = require('./model/msdpaten');
 const msdokumen = require('./model/msdokumen');
 const msdmerek = require('./model/msdmerek');
 const msdhakcipta = require('./model/msdhakcipta');
+const pembayaran = require('./model/trpembayaran');
+
 
 
 
@@ -79,6 +83,8 @@ app.use('/dokumen', dokumenRouter);
 app.use('/mereks', dmerekRouter);
 app.use('/download', downloadRouter);
 app.use('/exportexcel', exportRouter);
+app.use('/pembayaran', pembayaranRouter);
+
 
 
 
@@ -104,6 +110,9 @@ const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.
 sequelize
   .authenticate()
   .then(() => {
+    sequelize.sync({
+      force:true
+    });
     console.log("Connection has been established successfully.");
   })
   .catch(err => {

@@ -105,6 +105,47 @@ router.post('/getmerek', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getpendesainbyid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id
+  }
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.sequelize.query('SELECT DISTINCT * FROM `dmereks` '+
+    ' WHERE `dmereks`.`ID_MEREK` = "'+req.body.id+'"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+        // });x
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+          status: 400
+        });
+      });
+      if(error){
+        res.status(500).json({
+          error: error.message,
+          status: 500
+        });
+      }
+  })
+
+});
+
 router.post('/getmerekdiajukandetail', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     status: Joi.number().required(),

@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require('express');
 const hakciptaSchema = require('../model/mshakcipta');
 const dhakciptaSchema = require('../model/msdhakcipta');
+const dokumenSchema = require('../model/msdokumen');
+
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
@@ -14,14 +16,14 @@ const router = express.Router();
 router.post('/ajukan', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     id: Joi.number().required(),
-    status : Joi.number().required(),
-    pernah_diajukan : Joi.number().required()
+    status: Joi.number().required(),
+    pernah_diajukan: Joi.number().required()
   });
 
   const payload = {
     id: req.body.id,
-    status : req.body.status,
-    pernah_diajukan : req.body.pernah_diajukan
+    status: req.body.status,
+    pernah_diajukan: req.body.pernah_diajukan
   }
 
   Joi.validate(payload, validate, (error) => {
@@ -29,11 +31,11 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
       status: payload.status,
       pernah_diajukan: payload.pernah_diajukan,
     },
-    {
-      where: {
-        id: payload.id,
-      }
-    })
+      {
+        where: {
+          id: payload.id,
+        }
+      })
       .then((data) => {
         if (data === 0) {
           res.status(404).json({
@@ -42,8 +44,8 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
           });
         } else {
           res.status(200).json({
-            message : 'Update diajukan Succesfully',
-            status : 200
+            message: 'Update diajukan Succesfully',
+            status: 200
           })
         }
       })
@@ -79,6 +81,170 @@ router.post('/gethakcipta', checkAuth, function (req, res, next) {
         status: 500
       });
     });
+});
+
+router.post('/getdokumen', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    code: Joi.string().required(),
+  });
+
+  let payload = {
+    code: req.body.code
+  }
+  Joi.validate(payload, validate, (error) => {
+    hakciptaSchema.sequelize.query('SELECT `msdokumens`.*,`msjenisdokumens`.*,`msjenisdokumens`.`id` ' +
+      ' FROM `msdokumens` ' +
+      'JOIN `msjenisdokumens` ON `msdokumens`.`JENIS_DOKUMEN` = `msjenisdokumens`.`ID` ' +
+      ' WHERE `msdokumens`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumens`.`ROLE` = 1')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        error: error.message,
+        status: 400
+      });
+    }
+  })
+
+});
+
+router.post('/getdokumenver', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    code: Joi.string().required(),
+  });
+
+  let payload = {
+    code: req.body.code
+  }
+  Joi.validate(payload, validate, (error) => {
+    hakciptaSchema.sequelize.query('SELECT `msdokumens`.*,`msjenisdokumens`.*,`msjenisdokumens`.`id` ' +
+      ' FROM `msdokumens` ' +
+      'JOIN `msjenisdokumens` ON `msdokumens`.`JENIS_DOKUMEN` = `msjenisdokumens`.`ID` ' +
+      ' WHERE `msdokumens`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumens`.`ROLE` = 2')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        error: error.message,
+        status: 400
+      });
+    }
+  })
+
+});
+
+
+router.post('/getpenciptabyid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  let payload = {
+    id: req.body.id
+  }
+  Joi.validate(payload, validate, (error) => {
+    hakciptaSchema.sequelize.query('SELECT DISTINCT * FROM `dhakcipta`' +
+      ' WHERE `dhakcipta`.`ID_HAKCIPTA` = "' + req.body.id + '"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        error,
+        status: 400
+      });
+    }
+  })
+
+});
+
+router.post('/gethakciptadraftdetail', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  let payload = {
+    id: req.body.id
+  }
+  Joi.validate(payload, validate, (error) => {
+    hakciptaSchema.sequelize.query('SELECT `mshakcipta`.*,`dhakcipta`.*, `mspegawais`.* ' +
+      'FROM `mshakcipta` ' +
+      'JOIN `dhakcipta` ON `mshakcipta`.`ID` = `dhakcipta`.`ID_HAKCIPTA` ' +
+      'JOIN `mspegawais` ON `dhakcipta`.`NIK` = `mspegawais`.`NIK` ' +
+      'WHERE `mshakcipta`.`ID` = "' + req.body.id + '"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        error,
+        status: 400
+      });
+    }
+  })
+
 });
 
 
@@ -237,7 +403,7 @@ router.post('/addhakcipta', checkAuth, async function (req, res, next) {
 
 router.post('/gethakciptabyyear', checkAuth, function (req, res, next) {
   hakciptaSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
-    'FROM hakcipta GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
+    'FROM mshakcipta GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -339,4 +505,64 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
     }
   });
 })
+
+router.post('/updatehakciptasave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    judul: req.body.judul,
+    unit_kerja: req.body.unit_kerja,
+    object: req.body.object,
+    status: req.body.status,
+    no_handphone: req.body.no_handphone,
+    ipman_code: req.body.ipman_code,
+    kode_ubah: req.body.kode_ubah,
+    tgl_ubah: req.body.tgl_ubah
+  }
+
+  let validate = Joi.object().keys({
+    judul: Joi.string().required(),
+    unit_kerja: Joi.string().required(),
+    object: Joi.number().required(),
+    status: Joi.number().required(),
+    no_handphone: Joi.string().required(),
+    ipman_code: Joi.string().required(),
+    kode_ubah: Joi.string().required(),
+    tgl_ubah: Joi.string().required(),
+    // abstrak: Joi.string().required(),
+
+  });
+  Joi.validate(payload, validate, (error) => {
+    hakciptaSchema.update(payload, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      dhakciptaSchema.destroy({
+        where: {
+          id_hakcipta: req.body.id,
+        }
+      })
+    }).then((data) => {
+      dokumenSchema.destroy({
+        where: {
+          nomor_pendaftar: req.body.nomor_pendaftar,
+          rev: 0,
+          role: 1,
+        }
+      })
+      res.status(200).json({
+        'status': 'Update Successfuly',
+        'messages': error.message,
+      })
+    })
+
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  })
+})
+
 module.exports = router;

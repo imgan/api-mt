@@ -54,7 +54,6 @@ router.post('/updatepegawai', checkAuth, function (req, res, next) {
             id: req.body.id
         }
     }).then(data => {
-        console.log(req.params.id);
         res.status(200).json({
             message: 'Update Successfuly',
             data : data
@@ -62,15 +61,15 @@ router.post('/updatepegawai', checkAuth, function (req, res, next) {
     })
 })
 
-router.delete('/deletepegawai/:id', checkAuth, function (req, res, next) {
+router.post('/deletepegawai', checkAuth, function (req, res, next) {
     PegawaiSchema.destroy({
         where:{
-            id: req.params.id
+            id: req.body.id
         }
     }).then(data => {
         res.status(200).json({
             message: 'Delete Successfuly',
-            data : data
+            data
         });
     })
 })
