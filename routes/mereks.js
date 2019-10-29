@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require('express');
 const MerekSchema = require('../model/msmerek');
 const DmerekSchema = require('../model/msdmerek');
+const ipmancodeschema = require('../model/msipmancode');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const checkAuth = require('../middleware/check-auth');
@@ -14,14 +15,14 @@ const router = express.Router();
 router.post('/ajukan', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     id: Joi.number().required(),
-    status : Joi.number().required(),
-    pernah_diajukan : Joi.number().required()
+    status: Joi.number().required(),
+    pernah_diajukan: Joi.number().required()
   });
 
   const payload = {
     id: req.body.id,
-    status : req.body.status,
-    pernah_diajukan : req.body.pernah_diajukan
+    status: req.body.status,
+    pernah_diajukan: req.body.pernah_diajukan
   }
 
   Joi.validate(payload, validate, (error) => {
@@ -29,11 +30,11 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
       status: payload.status,
       pernah_diajukan: payload.pernah_diajukan,
     },
-    {
-      where: {
-        id: payload.id,
-      }
-    })
+      {
+        where: {
+          id: payload.id,
+        }
+      })
       .then((data) => {
         if (data === 0) {
           res.status(404).json({
@@ -42,8 +43,8 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
           });
         } else {
           res.status(200).json({
-            message : 'Update diajukan Succesfully',
-            status : 200
+            message: 'Update diajukan Succesfully',
+            status: 200
           })
         }
       })
@@ -142,8 +143,8 @@ router.post('/getpendesainbyid', checkAuth, function (req, res, next) {
     id: req.body.id
   }
   Joi.validate(payload, validate, (error) => {
-    MerekSchema.sequelize.query('SELECT DISTINCT * FROM `dmereks` '+
-    ' WHERE `dmereks`.`ID_MEREK` = "'+req.body.id+'"')
+    MerekSchema.sequelize.query('SELECT DISTINCT * FROM `dmereks` ' +
+      ' WHERE `dmereks`.`ID_MEREK` = "' + req.body.id + '"')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -164,14 +165,42 @@ router.post('/getpendesainbyid', checkAuth, function (req, res, next) {
           status: 400
         });
       });
-      if(error){
-        res.status(500).json({
-          error: error.message,
-          status: 500
-        });
-      }
+    if (error) {
+      res.status(500).json({
+        error: error.message,
+        status: 500
+      });
+    }
   })
 
+});
+
+router.post('/getipmancode', checkAuth, function (req, res, next) {
+  ipmancodeschema.findAndCountAll({
+    where: {
+      kode : 'MR'
+    }
+  })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 400
+      });
+    });
 });
 
 router.post('/getmerekdiajukandetail', checkAuth, function (req, res, next) {
@@ -206,12 +235,95 @@ router.post('/getmerekdiajukandetail', checkAuth, function (req, res, next) {
           status: 500
         });
       });
-      if(error){
-        res.status(400).json({
-          'status': 'Required',
-          'messages': error.message,
-        })
-      }
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  })
+});
+router.post('/getmerekdraftdetail', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  let payload = {
+    id: req.body.id,
+  }
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.sequelize.query('SELECT `msmereks`.*,`dmereks`.*, `mspegawais`.* '+
+   ' FROM `msmereks` '+
+   ' JOIN `dmereks` ON `msmereks`.`ID` = `dmereks`.`ID_merek` '+
+  ' JOIN `mspegawais` ON `dmereks`.`NIK` = `mspegawais`.`NIK` '+ 
+   ' WHERE `msmereks`.`ID` = "' + req.body.id + '"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+        // });x
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  })
+});
+
+router.post('/getmerekdiajukandetail', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    status: Joi.number().required(),
+    id: Joi.number().required(),
+  });
+
+  let payload = {
+    status: req.body.status,
+    id: req.body.id,
+  }
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.sequelize.query('SELECT msm.*,msr.nama_rev FROM msrevs msr  JOIN msmereks msm ON msr.id = msm.unit_kerja WHERE msm.status = "' + req.body.status + '" AND msm.id = "' + req.body.id + '"')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+        // });x
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
   })
 });
 

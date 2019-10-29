@@ -54,6 +54,33 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
     }
   });
 })
+router.post('/getipmancode', checkAuth, function (req, res, next) {
+  ipmancodeschema.findAndCountAll({
+    where: {
+      kode : 'DI'
+    }
+  })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 400
+      });
+    });
+});
 
 router.post('/getdesain', checkAuth, function (req, res, next) {
   desainSchema.findAndCountAll()

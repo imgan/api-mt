@@ -73,12 +73,14 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
     name: Joi.string().required(),
     type: Joi.string().required(),
     role: Joi.number().required(),
+    size: Joi.number().required(),
     jenis_dokumen: Joi.number().required(),
     downloadable: Joi.number().required(),
   });
 
   const payload = {
     nomor_pendaftar: req.body.nomor_pendaftar,
+    size: req.body.size,
     // dokumen: req.body.dokumen,
     name: req.body.name,
     type: req.body.type,
