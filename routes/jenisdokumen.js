@@ -9,32 +9,45 @@ const router = express.Router();
 
 /* GET listing. */
 router.post('/getnewdokver', checkAuth, function (req, res, next) {
-    if (req.body.id_role) {
-        DokumenSchema.findAndCountAll({
-            where: {
-                id_role: req.body.id_role
-            }
-        })
-            .then((data) => {
-                if (data.length < 1) {
-                    res.status(404).json({
-                        message: 'Not Found',
-                    });
-                }
-                else {
-                    res.status(200).json({
-                        data
-                    })
+    let validate = Joi.object().keys({
+        id_role: Joi.number().required(),
+    });
+
+    let payload = {
+        id_role: req.body.id_role,
+    }
+    Joi.validate(payload,validate, (error) => {
+            DokumenSchema.findAndCountAll({
+                where: {
+                    id_role: req.body.id_role
                 }
             })
-            .catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                    error: err,
-                    status: 500
+                .then((data) => {
+                    if (data.length < 1) {
+                        res.status(404).json({
+                            message: 'Not Found',
+                        });
+                    }
+                    else {
+                        res.status(200).json({
+                            data
+                        })
+                    }
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        error: err,
+                        status: 500
+                    });
                 });
-            });
-    }
+                if(error){
+                    res.status(400).json({
+                        error: error.message,
+                        status: 400
+                    });
+        }
+    })
+
 });
 
 router.post('/getjenisdokumen', checkAuth, function (req, res, next) {

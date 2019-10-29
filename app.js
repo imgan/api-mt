@@ -76,7 +76,7 @@ app.use('/desain', desainindustiRouter);
 app.use('/pegawai', pegawaiRouter);
 app.use('/nonpegawai', nonpegawaiRouter);
 app.use('/rev', revRouter);
-app.use('/dokumen', jenisdokumenRouter);
+app.use('/jenisdokumen', jenisdokumenRouter);
 app.use('/lib', msipmancodeRouter);
 app.use('/patens', dpatenRouter);
 app.use('/dokumen', dokumenRouter);
