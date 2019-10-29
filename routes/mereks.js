@@ -105,6 +105,34 @@ router.post('/getmerek', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/getmerekbyid', checkAuth, function (req, res, next) {
+  MerekSchema.findAndCountAll({
+    where: {
+      id: req.body.id
+    }
+  })
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 router.post('/getpendesainbyid', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     id: Joi.number().required(),
