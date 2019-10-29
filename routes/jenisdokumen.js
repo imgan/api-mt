@@ -51,7 +51,7 @@ router.post('/getnewdokver', checkAuth, function (req, res, next) {
 });
 
 router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
-    if (req.body.id_haki) {
+    if (req.body.id_haki && req.body.id_role === 'undefined' ) {
         DokumenSchema.findAndCountAll({
             where: {
                 id_haki: req.body.id_haki

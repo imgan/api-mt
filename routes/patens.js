@@ -656,4 +656,63 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
   })
 })
 
+router.post('/updateverifikasipatensave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    nomor_permohonan: req.body.nomor_permohonan,
+    pemeriksa_paten: req.body.pemeriksa_paten,
+    kontak_pemeriksa: req.body.kontak_pemeriksa,
+    email_pemeriksa: req.body.email_pemeriksa,
+    sertifikasi: req.body.sertifikasi,
+    filling: req.body.filling,
+    formalitas: req.body.formalitas,
+    publis: req.body.publis,
+    pembayaran: req.body.pembayaran,
+    pemberian: req.body.pemberian,
+    nomor_paten: req.body.nomor_paten,
+    tahun_granted: req.body.tahun_granted,
+    status: req.body.status,
+    tindak_lanjut: req.body.tindak_lanjut,
+    keterangan: req.body.keterangan,
+  }
+
+  let validate = Joi.object().keys({
+    // judul: Joi.string().required(),
+    nomor_permohonan: Joi.string().required(),
+    pemeriksa_paten: Joi.string().required(),
+    kontak_pemeriksa: Joi.string().required(),
+    email_pemeriksa: Joi.string().required(),
+    sertifikasi: Joi.string().required(),
+    filling: Joi.string().required(),
+    formalitas: Joi.string().required(),
+    publis: Joi.string().required(),
+    pembayaran: Joi.string().required(),
+    pemberian: Joi.string().required(),
+    nomor_paten: Joi.string().required(),
+    tahun_granted: Joi.string().required(),
+    status: Joi.number().required(),
+    tindak_lanjut: Joi.number().required(),
+    keterangan: Joi.string().required(),
+  });
+  Joi.validate(payload, validate, (error) => {
+    PatenSchema.update(payload, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      res.status(200).json({
+        'status': 'Update Successfuly',
+      })
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  })
+})
+
+
+
 module.exports = router;
