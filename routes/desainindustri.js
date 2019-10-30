@@ -578,4 +578,51 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
     }
   });
 })
+
+
+router.post('/updateverifikasidesainsave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,//
+    pemeriksa_desain: req.body.pemeriksa_desain,//
+    kontak_pemeriksa: req.body.kontak_pemeriksa,//
+    email_pemeriksa: req.body.email_pemeriksa,//
+    sertifikasi: req.body.sertifikasi,//
+    tahun_granted: req.body.tahun_granted,//
+    tahun_pendaftar: req.body.tahun_pendaftar,//
+    status: req.body.status,//
+    keterangan: req.body.keterangan,//
+  }
+
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+    pemeriksa_desain: Joi.string().required(),
+    kontak_pemeriksa: Joi.string().required(),
+    email_pemeriksa: Joi.string().required(),
+    sertifikasi: Joi.string().required(),
+    tahun_pendaftar: Joi.string().required(),
+    tahun_granted: Joi.string().required(),
+    status: Joi.number().required(),
+    keterangan: Joi.string().required(),
+  });
+  Joi.validate(payload, validate, (error) => {
+    desainSchema.update(payload, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      res.status(200).json({
+        'status': 200,
+        'message' : 'Update Succesfully'
+      })
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required' +error,
+        'messages': error,
+      })
+    }
+  })
+})
+
 module.exports = router;

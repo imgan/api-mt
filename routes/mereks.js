@@ -512,6 +512,48 @@ router.post('/adddmerek', checkAuth, async function (req, res, next) {
   })
 })
 
+router.post('/deletedmerek', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id_merek: Joi.number().required(),
+  });
+
+  const payload = {
+    id_merek: req.body.id_merek,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.destroy({
+      where: {
+        id_merek: req.body.id_merek,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            stataus: 404,
+            message: 'Not Found',
+          });
+        }
+        DmerekSchema.destroy({
+          where: {
+            id_merek: req.body.id_merek,
+          }
+        })
+        res.status(200).json(
+          {
+            stataus: 200,
+            message: 'Delete Succesfully'
+          }
+        )
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 router.post('/deletedraft', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({

@@ -305,5 +305,46 @@ router.post('/updatenourut', checkAuth, async function (req, res, next) {
   })
 });
 
+router.post('/deletedokumenbyip', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+  });
+
+  const payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    DokumenSchema.destroy({
+      where: {
+        nomor_pendaftar: req.body.nomor_pendaftar,
+        role: 1,
+        rev : 0
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json(
+            {
+              status: 200,
+              message: 'Delete Succesfully'
+            }
+          )
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 module.exports = router;

@@ -592,4 +592,53 @@ router.post('/updatehakciptasave', checkAuth, function (req, res, next) {
   })
 })
 
+router.post('/updateverifikasihakciptasave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    nomor_pencatat: req.body.nomor_pencatat,//
+    pemeriksa_hakcipta: req.body.pemeriksa_hakcipta,//
+    kontak_pemeriksa: req.body.kontak_pemeriksa,//
+    email_pemeriksa: req.body.email_pemeriksa,//
+    sertifikasi: req.body.sertifikasi,//
+    nomor_hakcipta: req.body.nomor_hakcipta,//
+    tgl_permohonan : req.body.tgl_permohonan,//
+    tgl_publish : req.body.tgl_publish,//
+    // lokasi : req.body.lokasi,//
+    status: req.body.status,//
+    keterangan: req.body.keterangan,//
+  }
+
+  let validate = Joi.object().keys({
+    nomor_pencatat: Joi.string().required(),
+    pemeriksa_hakcipta: Joi.string().required(),
+    kontak_pemeriksa: Joi.string().required(),
+    email_pemeriksa: Joi.string().required(),
+    sertifikasi: Joi.string().required(),
+    nomor_hakcipta : Joi.string().required(),
+    tgl_permohonan : Joi.date().required(),
+    tgl_publish : Joi.date().required(),
+    // lokasi: Joi.string().required(),
+    status: Joi.number().required(),
+    keterangan: Joi.string().required(),
+  });
+  Joi.validate(payload, validate, (error) => {
+    hakciptaSchema.update(payload, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      res.status(200).json({
+        'status': 200,
+        'message' : 'Update Succesfully'
+      })
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required' +error,
+        'messages': error,
+      })
+    }
+  })
+})
+
 module.exports = router;

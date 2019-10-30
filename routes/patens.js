@@ -509,6 +509,45 @@ router.post('/getinventorid', checkAuth, function (req, res, next) {
   });
 })
 
+router.post('/deletedpatenbyid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    dPatenSchema.destroy({
+      where: {
+        id: req.body.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json(
+            {
+              status: 200,
+              message: 'Delete Succesfully'
+            }
+          )
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 router.post('/deletedraft', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
@@ -606,10 +645,20 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
 })
 
 router.post('/updatepatensave', checkAuth, function (req, res, next) {
+  var base64Data = req.body.abstrak;
+  var base64Data2 = req.body.gambar;
+
+  require("fs").writeFileSync(`./public/file/${req.body.abstrak_name}`, base64Data, 'base64', function (error, data) {
+    console.log('File Berhasil Di generate');
+  });
+
+  require("fs").writeFileSync(`./public/file/${req.body.gambar_name}`, base64Data2, 'base64', function (error, data) {
+    console.log('File Berhasil Di generate');
+  });
 
   const payload = {
     judul: req.body.judul,
-    abstrak: req.body.abstrak,
+    // abstrak: req.body.abstrak,
     bidang_invensi: req.body.bidang_invensi,
     unit_kerja: req.body.unit_kerja,
     status: req.body.status,
@@ -621,8 +670,8 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
 
   let validate = Joi.object().keys({
     judul: Joi.string().required(),
-    abstrak: Joi.string().required(),
-    bidang_invensi: Joi.number().required(),
+    // abstrak: Joi.string().required(),
+    bidang_invensi: Joi.string().required(),
     unit_kerja: Joi.string().required(),
     status: Joi.number().required(),
     no_handphone: Joi.string().required(),
@@ -634,8 +683,8 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
   Joi.validate(payload, validate, (error) => {
     PatenSchema.update({
       judul: req.body.judul,
-      abstrak: req.body.abstrak,
-      gambar: req.body.gambar,
+      abstrak_name: req.body.abstrak_name,
+      gambar_name: req.body.gambar_name,
       bidang_invensi: req.body.bidang_invensi,
       unit_kerja: req.body.unit_kerja,
       status: req.body.status,

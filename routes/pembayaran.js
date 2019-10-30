@@ -82,10 +82,10 @@ router.post('/getdetail', checkAuth, function (req, res, next) {
     }
 
     Joi.validate(payload, validate, (error) => {
-        PembayaranSchema.sequelize.query('SELECT `mspaten`.*,`msrev`.`NAMA_REV` ' +
-            'FROM `mspaten` ' +
-            'JOIN `msrev` ON `mspaten`.`UNIT_KERJA` = `msrev`.`ID` ' +
-            'WHERE `mspaten`.`NOMOR_PATEN` =' + req.body.nomor_paten + ' ')
+        PembayaranSchema.sequelize.query('SELECT `mspatens`.*,`msrevs`.`nama_rev` ' +
+            'FROM `mspatens` ' +
+            'JOIN `msrevs` ON `mspatens`.`UNIT_KERJA` = `msrevs`.`ID` ' +
+            'WHERE `mspatens`.`NOMOR_PATEN` = ' + req.body.nomor_paten + ' ')
             .then(data => {
                 res.status(200).json({
                     message: 'success',
