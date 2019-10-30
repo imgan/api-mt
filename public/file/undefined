@@ -1,0 +1,54 @@
+<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<style>
+    body {
+        margin-top: 20px;
+    }
+
+    .panel-title {
+        display: inline;
+        font-weight: bold;
+    }
+
+    .checkbox.pull-right {
+        margin: 0;
+    }
+
+    .pl-ziro {
+        padding-left: 0px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="panel">
+                <a href="#"><img src="https://i.ibb.co/7Kkxcs6/SLU-Logo.png" alt="SLU-Logo" border="0"></a>
+                <hr>
+                <a href="#"><img src="https://i.ibb.co/P4T98tL/SLU-Sub-Headline.png" alt="SLU-Sub-Headline" border="0"></a>
+            </div>
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"> <img src=""></li>
+            </ul>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <a href="#"><img src="https://i.ibb.co/HK7ZDd7/SLU-Button.png" alt="SLU-Button" border="0"></a>
+        </div>
+    </div>
+</div>

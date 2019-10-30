@@ -11,6 +11,47 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
+router.post('/getdokumenver', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    code: Joi.string().required(),
+  });
+
+  let payload = {
+    code: req.body.code
+  }
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.sequelize.query('SELECT `msdokumens`.*,`msjenisdokumens`.*,`msjenisdokumens`.`id` '+
+    'FROM `msdokumens` '+
+    'JOIN `msjenisdokumens` ON `msdokumens`.`JENIS_DOKUMEN` = `msjenisdokumens`.`ID` '+
+    'WHERE `msdokumens`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumens`.`ROLE` = 1')
+      .then((data) => {
+        if (data.length < 1) {
+          res.status(404).json({
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json({
+            data
+          })
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: err,
+          status: 500
+        });
+      });
+    if (error) {
+      res.status(400).json({
+        error: error.message,
+        status: 400
+      });
+    }
+  })
+
+});
+
 /* GET users listing. */
 router.post('/ajukan', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
@@ -514,4 +555,50 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
     }
   });
 })
+
+router.post('/updateverifikasisave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    nomor_pendaftar: req.body.nomor_pendaftar,
+    pemeriksa_merek: req.body.pemeriksa_merek,
+    kontak_pemeriksa: req.body.kontak_pemeriksa,
+    email_pemeriksa: req.body.email_pemeriksa,
+    sertifikasi: req.body.sertifikasi,
+    tahun_granted: req.body.tahun_granted,
+    tahun_pendaftaran: req.body.tahun_pendaftaran,
+    status: req.body.status,
+    keterangan: req.body.keterangan,
+  }
+
+  let validate = Joi.object().keys({
+    nomor_pendaftar: Joi.string().required(),
+    pemeriksa_merek: Joi.string().required(),
+    kontak_pemeriksa: Joi.string().required(),
+    email_pemeriksa: Joi.string().required(),
+    sertifikasi: Joi.string().required(),
+    tahun_pendaftaran: Joi.string().required(),
+    tahun_granted: Joi.string().required(),
+    status: Joi.number().required(),
+    keterangan: Joi.string().required(),
+  });
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.update(payload, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      res.status(200).json({
+        'status': 200,
+        'message' : 'Update Succesfully'
+      })
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required' +error,
+        'messages': error,
+      })
+    }
+  })
+})
+
 module.exports = router;

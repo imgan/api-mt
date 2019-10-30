@@ -51,7 +51,7 @@ router.post('/getnewdokver', checkAuth, function (req, res, next) {
 });
 
 router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
-    if (req.body.id_haki && req.body.id_role === 'undefined' ) {
+    if (req.body.id_haki && req.body.id_role === undefined  ) {
         DokumenSchema.findAndCountAll({
             where: {
                 id_haki: req.body.id_haki
@@ -70,7 +70,6 @@ router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
                 }
             })
             .catch((err) => {
-                console.log(err);
                 res.status(500).json({
                     error: err,
                     status: 500
@@ -102,7 +101,36 @@ router.post('/getjenisdokumen', checkAuth, function (req, res, next) {
                     status: 500
                 });
             });
+    } else if (req.body.id_role && req.body.id_haki === undefined) {
+
+        DokumenSchema.findAndCountAll({
+            where: {
+                id_role: req.body.id_role
+            }
+        })
+            .then((data) => {
+                if (data.length < 1) {
+                    res.status(404).json({
+                        message: 'Not Found',
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        data
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    error: err,
+                    status: 500
+                });
+            });
     } else {
+        console.log(req.body.id_haki)
+        console.log(req.body.id_role)
+
         DokumenSchema.findAndCountAll()
             .then((data) => {
                 if (data.length < 1) {

@@ -298,6 +298,17 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
 });
 
 router.post('/addpaten', checkAuth, async function (req, res, next) {
+  var base64Data = req.body.abstrak;
+  var base64Data2 = req.body.gambar;
+
+
+  require("fs").writeFileSync(`./public/file/${req.body.abstrak_name}`, base64Data, 'base64', function (error , data) {
+    console.log('File Berhasil Di generate');
+  });
+
+  require("fs").writeFileSync(`./public/file/${req.body.gambar_name}`, base64Data2, 'base64', function (error , data) {
+    console.log('File Berhasil Di generate');
+  });
 
   let validate = Joi.object().keys({
     judul: Joi.string().required(),
@@ -330,8 +341,8 @@ router.post('/addpaten', checkAuth, async function (req, res, next) {
     no_handphone: req.body.no_handphone,
     ipman_code: req.body.ipman_code,
     kode_input: req.body.kode_input,
-    abstrak: req.body.abstrak,
-    gambar: req.body.gambar
+    abstrak: req.body.abstrak_name,
+    gambar: req.body.gambar_name
   }
   Joi.validate(payload, validate, (error) => {
     try {

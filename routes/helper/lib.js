@@ -91,7 +91,7 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
 
   const schema = {
     nomor_pendaftar: req.body.nomor_pendaftar,
-    // dokumen: req.body.dokumen,
+    size: req.body.size,
     name: req.body.name,
     type: req.body.type,
     role: req.body.role,
