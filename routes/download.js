@@ -11,9 +11,10 @@ const router = express.Router();
 const salt = process.env.SALT;
 
 /* GET users listing. */
-router.get('/download', function (req, res, next) {
-    const file = `./public/file/ss.png`;
-    res.download(file); // Set disposition and send it.
+router.get('/download/:name', function (req, res, next) {
+    const name = req.params.name
+    const url = `./public/file/${name}`
+    res.download(url); // Set disposition and send it.
 });
 
 module.exports = router;

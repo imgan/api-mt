@@ -61,6 +61,8 @@ router.post('/updatepegawai', checkAuth, function (req, res, next) {
     })
 })
 
+
+
 router.post('/deletepegawai', checkAuth, function (req, res, next) {
     PegawaiSchema.destroy({
         where:{

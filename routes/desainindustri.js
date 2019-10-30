@@ -535,6 +535,7 @@ router.post('/getpendesainbyid', checkAuth, function (req, res, next) {
 });
 
 
+
 router.post('/deletedraft', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     id: Joi.number().required(),

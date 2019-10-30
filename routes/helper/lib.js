@@ -61,7 +61,7 @@ const upload = multer({
 router.post('/adddokumen', checkAuth, function (req, res, next) {
   var base64Data = req.body.dokumen;
 
-  require("fs").writeFileSync(`./public/file/${req.body.name}`, base64Data, 'base64', function (error , data) {
+  require("fs").writeFileSync(`./public/file/${req.body.name}`, base64Data, 'base64', function (error, data) {
     console.log('File Berhasil Di generate');
   });
 
@@ -75,7 +75,7 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
     role: Joi.number().required(),
     size: Joi.number().required(),
     jenis_dokumen: Joi.number().required(),
-    downloadable: Joi.number().required(),
+    // downloadable: Joi.number().required(),
   });
 
   const payload = {
@@ -86,7 +86,7 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
     type: req.body.type,
     role: req.body.role,
     jenis_dokumen: req.body.jenis_dokumen,
-    downloadable: req.body.downloadable
+    // downloadable: req.body.downloadable
   }
 
   const schema = {
@@ -100,19 +100,11 @@ router.post('/adddokumen', checkAuth, function (req, res, next) {
   }
 
   Joi.validate(payload, validate, (error) => {
-    try {
-      const paten = DokumenSchema.create(schema)
-        .then(result => res.status(201).json({
-          status: 201,
-          messages: 'Dokumen berhasil ditambahkan',
-        }));
-    } catch (error) {
-      res.status(400).json({
-        'status': 'ERROR',
-        'messages': error.message,
-        'data': {},
-      })
-    }
+    const paten = DokumenSchema.create(schema)
+      .then(result => res.status(201).json({
+        status: 201,
+        messages: 'Dokumen berhasil ditambahkan',
+      }));
     if (error) {
       res.status(400).json({
         'status': 'ERROR',
