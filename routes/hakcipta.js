@@ -564,22 +564,10 @@ router.post('/updatehakciptasave', checkAuth, function (req, res, next) {
         id: req.body.id
       }
     }).then((data) => {
-      dhakciptaSchema.destroy({
-        where: {
-          id_hakcipta: req.body.id,
-        }
-      })
-    }).then((data) => {
-      dokumenSchema.destroy({
-        where: {
-          nomor_pendaftar: req.body.nomor_pendaftar,
-          rev: 0,
-          role: 1,
-        }
-      })
+      // console.log(data)
       res.status(200).json({
-        'status': 'Update Successfuly',
-        'messages': error.message,
+        'status': 200,
+        'messages': 'Update Successfuly',
       })
     })
 
