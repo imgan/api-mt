@@ -802,7 +802,8 @@ router.post('/updateverifikasipatensave', checkAuth, function (req, res, next) {
       }
     }).then((data) => {
       res.status(200).json({
-        'status': 'Update Successfuly',
+        'status': 200,
+        'message': 'Update Successfuly',
       })
     })
     if (error) {

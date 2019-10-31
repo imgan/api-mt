@@ -24,7 +24,8 @@ const msdokumen = sequelize.define("msdokumen", {
     type: Sequelize.STRING
   },
   rev: {
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
+    defaultValue : 0
   },
   role: {
     type: Sequelize.INTEGER

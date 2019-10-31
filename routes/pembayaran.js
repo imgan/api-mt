@@ -11,6 +11,13 @@ const router = express.Router();
 
 /* GET users listing. */
 router.post('/addpembayaran', checkAuth, function (req, res, next) {
+
+    var base64Data = req.body.dokumen;
+
+    require("fs").writeFileSync(`./public/file/${req.body.name}`, base64Data, 'base64', function (error, data) {
+      console.log('File Berhasil Di generate');
+    });
+    
     let validate = Joi.object().keys({
         nomor_pendaftar: Joi.string().required(),
         tgl_input: Joi.date().required(),
@@ -85,7 +92,7 @@ router.post('/getdetail', checkAuth, function (req, res, next) {
         PembayaranSchema.sequelize.query('SELECT `mspatens`.*,`msrevs`.`nama_rev` ' +
             'FROM `mspatens` ' +
             'JOIN `msrevs` ON `mspatens`.`UNIT_KERJA` = `msrevs`.`ID` ' +
-            'WHERE `mspatens`.`NOMOR_PATEN` = ' + req.body.nomor_paten + ' ')
+            'WHERE `mspatens`.`id` = ' + req.body.nomor_paten + ' ')
             .then(data => {
                 res.status(200).json({
                     message: 'success',
