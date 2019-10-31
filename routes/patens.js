@@ -715,8 +715,8 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
   }
   const schema = {
     judul: req.body.judul,
-    abstrak_name: req.body.abstrak_name,
-    gambar_name: req.body.gambar_name,
+    abstrak: req.body.abstrak_name,
+    gambar: req.body.gambar_name,
     bidang_invensi: req.body.bidang_invensi,
     unit_kerja: req.body.unit_kerja,
     status: req.body.status,
