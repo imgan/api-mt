@@ -488,7 +488,79 @@ router.post('/adddhakcipta', checkAuth, async function (req, res, next) {
   })
 });
 
+router.post('/getinventorid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
 
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    PatenSchema.sequelize.query({
+      query: "SELECT DISTINCT * FROM `dpatens` WHERE id_paten = " + req.body.id + "",
+    }).then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'ERROR',
+        'messages': error.message,
+      })
+    }
+  });
+})
+
+router.post('/deletedhakciptabyid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    dhakciptaSchema.destroy({
+      where: {
+        id: req.body.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json(
+            {
+              status: 200,
+              message: 'Delete Succesfully'
+            }
+          )
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 router.post('/deletedraft', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
