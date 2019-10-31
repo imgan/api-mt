@@ -377,9 +377,12 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
   }
 
   Joi.validate(payload, validate, (error) => {
-    PatenSchema.sequelize.query({
-      query: "SELECT mp.*,dp.*, mpg.* FROM mspatens mp JOIN dpatens dp ON mp.id = dp.id_paten JOIN mspegawais mpg ON dp.nik = mpg.nik where mp.id = " + req.body.id + " ",
-    }).then((data) => {
+    PatenSchema.sequelize.query('SELECT `mspatens`.*,`dpatens`.*, `mspegawais`.* '+
+      ' FROM `mspatens` '+
+     ' JOIN `dpatens` ON `mspatens`.`ID` = `dpatens`.`ID_PATEN` '+
+      ' JOIN `mspegawais` ON `dpatens`.`NIK` = `mspegawais`.`NIK` '+
+     ' WHERE `mspatens`.`ID` = ' + req.body.id + " ")
+    .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
           message: 'Not Found',
@@ -549,6 +552,46 @@ router.post('/deletedpatenbyid', checkAuth, function (req, res, next) {
   });
 })
 
+router.post('/deletedpatenbyip', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    dPatenSchema.destroy({
+      where: {
+        id_paten: req.body.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json(
+            {
+              status: 200,
+              message: 'Delete Succesfully'
+            }
+          )
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
+
 router.post('/deletedraft', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     id: Joi.number().required(),
@@ -645,16 +688,19 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
 })
 
 router.post('/updatepatensave', checkAuth, function (req, res, next) {
-  var base64Data = req.body.abstrak;
-  var base64Data2 = req.body.gambar;
+  // if(req.body.abstrak !== undefined && req.body.abstrak_name !== undefined) {
+    var base64Data = req.body.abstrak;
+    require("fs").writeFileSync(`./public/file/${req.body.abstrak_name}`, base64Data, 'base64', function (error, data) {
+      console.log('File Berhasil Di generate');
+    });
+  // }
+  // if(req.body.gambar !== undefined && req.body.gambar_name !== undefined) {
+    var base64Data2 = req.body.gambar;
+    require("fs").writeFileSync(`./public/file/${req.body.gambar_name}`, base64Data2, 'base64', function (error, data) {
+      console.log('File Berhasil Di generate');
+    });
+  // }
 
-  require("fs").writeFileSync(`./public/file/${req.body.abstrak_name}`, base64Data, 'base64', function (error, data) {
-    console.log('File Berhasil Di generate');
-  });
-
-  require("fs").writeFileSync(`./public/file/${req.body.gambar_name}`, base64Data2, 'base64', function (error, data) {
-    console.log('File Berhasil Di generate');
-  });
 
   const payload = {
     judul: req.body.judul,
@@ -667,7 +713,18 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
     kode_ubah: req.body.kode_ubah,
     tgl_ubah: req.body.tgl_ubah
   }
-
+  const schema = {
+    judul: req.body.judul,
+    abstrak_name: req.body.abstrak_name,
+    gambar_name: req.body.gambar_name,
+    bidang_invensi: req.body.bidang_invensi,
+    unit_kerja: req.body.unit_kerja,
+    status: req.body.status,
+    no_handphone: req.body.no_handphone,
+    ipman_code: req.body.ipman_code,
+    kode_ubah: req.body.kode_ubah,
+    tgl_ubah: req.body.tgl_ubah
+  }
   let validate = Joi.object().keys({
     judul: Joi.string().required(),
     // abstrak: Joi.string().required(),
@@ -681,30 +738,15 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
   });
   
   Joi.validate(payload, validate, (error) => {
-    PatenSchema.update({
-      judul: req.body.judul,
-      abstrak_name: req.body.abstrak_name,
-      gambar_name: req.body.gambar_name,
-      bidang_invensi: req.body.bidang_invensi,
-      unit_kerja: req.body.unit_kerja,
-      status: req.body.status,
-      no_handphone: req.body.no_handphone,
-      ipman_code: req.body.ipman_code,
-      kode_ubah: req.body.kode_ubah,
-      tgl_ubah: req.body.tgl_ubah
-    }, {
+    PatenSchema.update(schema, {
       where: {
         id: req.body.id
       }
-    }).then((data) => {
-      dPatenSchema.destroy({
-        where: {
-          id_paten: req.body.id,
-        }
-      })
+    }).then((data,error) => {
       res.status(200).json({
         'status': 'Update Successfuly',
-        'messages': error.message,
+      }).catch((error) => {
+      console.log(error)
       })
     })
     if (error) {
@@ -717,7 +759,6 @@ router.post('/updatepatensave', checkAuth, function (req, res, next) {
 })
 
 router.post('/updateverifikasipatensave', checkAuth, function (req, res, next) {
-
   const payload = {
     nomor_permohonan: req.body.nomor_permohonan,
     pemeriksa_paten: req.body.pemeriksa_paten,

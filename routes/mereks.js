@@ -522,29 +522,18 @@ router.post('/deletedmerek', checkAuth, function (req, res, next) {
   }
 
   Joi.validate(payload, validate, (error) => {
-    MerekSchema.destroy({
+    DmerekSchema.destroy({
       where: {
         id_merek: req.body.id_merek,
       }
     })
       .then((data) => {
-        if (data === 0) {
-          res.status(404).json({
-            stataus: 404,
-            message: 'Not Found',
-          });
-        }
-        DmerekSchema.destroy({
-          where: {
-            id_merek: req.body.id_merek,
-          }
-        })
-        res.status(200).json(
-          {
-            stataus: 200,
-            message: 'Delete Succesfully'
-          }
-        )
+          res.status(200).json(
+            {
+              status: 200,
+              message: 'Delete Succesfully'
+            }
+          )
       })
     if (error) {
       res.status(400).json({
@@ -629,6 +618,53 @@ router.post('/updateverifikasisave', checkAuth, function (req, res, next) {
         id: req.body.id
       }
     }).then((data) => {
+      res.status(200).json({
+        'status': 200,
+        'message' : 'Update Succesfully'
+      })
+    })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required' +error,
+        'messages': error,
+      })
+    }
+  })
+})
+
+router.post('/updatemereksave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    judul: req.body.judul,
+    kelas: req.body.kelas,
+    unit_kerja: req.body.unit_kerja,
+    no_handphone: req.body.no_handphone,
+    status: req.body.status,
+  }
+
+  const schema = {
+      judul: req.body.judul,
+      kelas: req.body.kelas,
+      unit_kerja: req.body.unit_kerja,
+      no_handphone: req.body.no_handphone,
+      status: req.body.status,
+  }
+
+  let validate = Joi.object().keys({
+    judul: Joi.string().required(),
+    kelas: Joi.string().required(),
+    unit_kerja: Joi.string().required(),
+    no_handphone: Joi.string().required(),
+    status: Joi.number().required(),
+  });
+  Joi.validate(payload, validate, (error) => {
+    MerekSchema.update(schema, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      // console.log(data)
+      
       res.status(200).json({
         'status': 200,
         'message' : 'Update Succesfully'
