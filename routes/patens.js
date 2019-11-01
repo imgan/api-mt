@@ -524,7 +524,7 @@ router.post('/deletedpatenbyid', checkAuth, function (req, res, next) {
   Joi.validate(payload, validate, (error) => {
     dPatenSchema.destroy({
       where: {
-        id: req.body.id,
+        id_paten: req.body.id,
       }
     })
       .then((data) => {

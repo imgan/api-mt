@@ -57,7 +57,7 @@ router.post('/ajukan', checkAuth, function (req, res, next) {
 router.post('/getipmancode', checkAuth, function (req, res, next) {
   ipmancodeschema.findAndCountAll({
     where: {
-      kode : 'DI'
+      kode: 'DI'
     }
   })
     .then((data) => {
@@ -579,6 +579,86 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
   });
 })
 
+router.post('/updatedesainsave', checkAuth, function (req, res, next) {
+
+  const payload = {
+    judul: req.body.judul,
+    unit_kerja: req.body.unit_kerja,
+    status: req.body.status,
+    no_handphone: req.body.no_handphone,
+    kode_ubah: req.body.kode_ubah,
+    tgl_ubah: req.body.tgl_ubah
+  }
+
+  let validate = Joi.object().keys({
+    judul: Joi.string().required(),
+    unit_kerja: Joi.string().required(),
+    status: Joi.number().required(),
+    no_handphone: Joi.string().required(),
+    kode_ubah: Joi.string().required(),
+    tgl_ubah: Joi.string().required(),
+  });
+  Joi.validate(payload, validate, (error) => {
+    desainSchema.update(payload, {
+      where: {
+        id: req.body.id
+      }
+    }).then((data) => {
+      // console.log(data)
+      res.status(200).json({
+        'status': 200,
+        'messages': 'Update Successfuly',
+      })
+    })
+
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  })
+})
+
+router.post('/deleteddesainbyid', checkAuth, function (req, res, next) {
+  let validate = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  const payload = {
+    id: req.body.id,
+  }
+
+  Joi.validate(payload, validate, (error) => {
+    ddesainSchema.destroy({
+      where: {
+        id_desain_industri: req.body.id,
+      }
+    })
+      .then((data) => {
+        if (data === 0) {
+          res.status(404).json({
+            status: 404,
+            message: 'Not Found',
+          });
+        }
+        else {
+          res.status(200).json(
+            {
+              status: 200,
+              message: 'Delete Succesfully'
+            }
+          )
+        }
+      })
+    if (error) {
+      res.status(400).json({
+        'status': 'Required',
+        'messages': error.message,
+      })
+    }
+  });
+})
 
 router.post('/updateverifikasidesainsave', checkAuth, function (req, res, next) {
 
@@ -613,12 +693,12 @@ router.post('/updateverifikasidesainsave', checkAuth, function (req, res, next) 
     }).then((data) => {
       res.status(200).json({
         'status': 200,
-        'message' : 'Update Succesfully'
+        'message': 'Update Succesfully'
       })
     })
     if (error) {
       res.status(400).json({
-        'status': 'Required' +error,
+        'status': 'Required' + error,
         'messages': error,
       })
     }

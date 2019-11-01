@@ -534,7 +534,7 @@ router.post('/deletedhakciptabyid', checkAuth, function (req, res, next) {
   Joi.validate(payload, validate, (error) => {
     dhakciptaSchema.destroy({
       where: {
-        id: req.body.id,
+        id_hakcipta: req.body.id,
       }
     })
       .then((data) => {
