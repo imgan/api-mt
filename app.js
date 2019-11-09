@@ -97,7 +97,7 @@ app.use(function(req, res, next) {
 });
 
 const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASSWORD, {
-  host: '192.168.1.5',
+  host: 'localhost',
   dialect: 'mysql',
   // operatorsAliases: false,
   pool: {

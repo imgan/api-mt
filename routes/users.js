@@ -11,7 +11,9 @@ const router = express.Router();
 const salt = process.env.SALT;
 
 /* GET users listing. */
-
+router.get('/dedi', (req, res) => {
+  res.send('index', { title: 'Expresssssss' });
+});
 
 router.post('/getalluser', checkAuth, function (req, res, next) {
   UserSchema.findAndCountAll({
