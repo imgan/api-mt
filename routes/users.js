@@ -9,6 +9,7 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 const salt = process.env.SALT;
+const { gettoken, register } = require('../lib/gateway');
 
 /* GET users listing. */
 router.get('/dedi', (req, res) => {
@@ -118,74 +119,37 @@ router.post('/register', async function (req, res, next) {
 });
 
 router.post('/login', (req, res) => {
-  let validate = Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().required()
-  });
-  let payload = {
-    email: req.body.email,
-    password: req.body.password,
-  }
+  try {
+    const validate = Joi.object().keys({
+      email: Joi.string().required(),
+      password: Joi.string().required(),
+    });
 
-  Joi.validate(payload, validate, (error) => {
-    bcrypt.hash(payload.password, 10, function (err, hash) {
-      // Store hash in your password DB.
-      UserSchema.sequelize.query('SELECT a.password,a.id,a.name, a.email, a.image, a.role_id, a.is_active,b.nama_rev,b.status,b.keterangan,golongan from msusers a join msrevs b on a.role_id = b.id where a.email = "' + req.body.email + '"',
-        { replacements: { status: 'active', type: UserSchema.sequelize.QueryTypes.SELECT } })
-        .then((user) => {
-          if (user[0].length < 1) {
-            res.status(401).json({
-              message: 'Email atau Password Salah !!!',
-            });
-          }
-          else {
-            const users = user[0];
-            bcrypt.compare(payload.password, users[0].password, function (error, match) {
-              // console.log()
-              if (match) {
-                const token = jwt.sign({ email: users[0].email, role: users[0].role_id, is_active: users[0].is_active }, process.env.JWTKU, {
-                  expiresIn: "30d"
-                });
-                res.status(200).json({
-                  message: 'Success',
-                  status: 200,
-                  user_id: users[0].id,
-                  email: users[0].email,
-                  role: users[0].role_id,
-                  is_active: users[0].is_active,
-                  name: users[0].name,
-                  image: users[0].image,
-                  nama_rev: users[0].nama_rev,
-                  status_rev: users[0].status,
-                  keterangan: users[0].keterangan,
-                  golongan: users[0].golongan,
-                  token: token,
-                });
-              } else {
-                res.status(403).json({
-                  error: 'Email atau Password Salah !!!',
-                  status: 403
-                });
-              }
+    const payload = {
+      email: req.body.email,
+      password: req.body.password,
+    };
 
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(500).json({
-            error: err,
-            status: 500
-          });
+    Joi.validate(validate, payload, async () => {
+      try {
+        const data = await gettoken(req.body.email, req.body.password);
+        res.status(200).json({
+          error: false,
+          data: data,
         });
-      if (error) {
+      } catch (error) {
         res.status(400).json({
-          message: ' Required',
-          error
+          status: 500,
+          messages: error,
         });
       }
-    })
-  });
+    });
+  } catch (error) {
+    res.status(500).json({
+      error,
+      status: 500,
+    });
+  }
 });
 
 router.post('/getuserrole', checkAuth, function (req, res, next) {
