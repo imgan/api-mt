@@ -115,7 +115,7 @@ router.post('/getdesaindraftdetail', checkAuth, function (req, res, next) {
     id: req.body.id,
   }
   Joi.validate(payload, validate, (error) => {
-    desainSchema.sequelize.query('SELECT `msdesainindustris`.*,`ddesainindustris`.*, `mspegawais`.* FROM `msdesainindustris`  JOIN `ddesainindustris` ON `msdesainindustris`.`ID` = `ddesainindustris`.`ID_DESAIN_INDUSTRI` JOIN `mspegawais` ON `ddesainindustris`.`NIK` = `mspegawais`.`NIK` WHERE `msdesainindustris`.`ID` = "' + req.body.id + '"')
+    desainSchema.sequelize.query('SELECT `msdesainindustri`.*,`ddesainindustri`.*, `mspegawai`.* FROM `msdesainindustri`  JOIN `ddesainindustri` ON `msdesainindustri`.`ID` = `ddesainindustri`.`ID_DESAIN_INDUSTRI` JOIN `mspegawai` ON `ddesainindustri`.`NIK` = `mspegawai`.`NIK` WHERE `msdesainindustri`.`ID` = "' + req.body.id + '"')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -297,7 +297,7 @@ router.post('/getdesainstatus', checkAuth, function (req, res, next) {
 
   Joi.validate(payload, validate, (error) => {
     if (role_id == 18) {
-      desainSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN msdesainindustris a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
+      desainSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN msdesainindustri a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
         .then((data) => {
           if (data.length < 1) {
             res.status(404).json({
@@ -317,7 +317,7 @@ router.post('/getdesainstatus', checkAuth, function (req, res, next) {
           });
         });
     } else {
-      desainSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN msdesainindustris a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
+      desainSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN msdesainindustri a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
         .then((data) => {
           if (data.length < 1) {
             res.status(404).json({
@@ -350,7 +350,7 @@ router.post('/getdesainstatus', checkAuth, function (req, res, next) {
 
 
 router.post('/getnonpendesain', checkAuth, function (req, res, next) {
-  ddesainSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from ddesainindustris dp JOIN msnonpegawais mp ON dp.nik = mp.nik')
+  ddesainSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from ddesainindustri dp JOIN msnonpegawais mp ON dp.nik = mp.nik')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -382,11 +382,11 @@ router.post('/getdesaindiajukandetail', checkAuth, function (req, res, next) {
     id: req.body.id,
   }
   Joi.validate(payload, validate, (error) => {
-    desainSchema.sequelize.query('SELECT `msdesainindustris`.*,`msrevs`.`nama_rev` ' +
+    desainSchema.sequelize.query('SELECT `msdesainindustri`.*,`msrevs`.`nama_rev` ' +
       ' FROM `msrevs` ' +
-      ' JOIN `msdesainindustris` ON `msrevs`.`id` = `msdesainindustris`.`unit_kerja` ' +
-      ' WHERE `msdesainindustris`.`status` = 20 ' +
-      ' AND `msdesainindustris`.`ID` = "' + req.body.id + '"')
+      ' JOIN `msdesainindustri` ON `msrevs`.`id` = `msdesainindustri`.`unit_kerja` ' +
+      ' WHERE `msdesainindustri`.`status` = 20 ' +
+      ' AND `msdesainindustri`.`ID` = "' + req.body.id + '"')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -417,7 +417,7 @@ router.post('/getdesaindiajukandetail', checkAuth, function (req, res, next) {
 
 router.post('/getdesainbyyear', checkAuth, function (req, res, next) {
   desainSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
-    'FROM msdesainindustris GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
+    'FROM msdesainindustri GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -439,7 +439,7 @@ router.post('/getdesainbyyear', checkAuth, function (req, res, next) {
     });
 });
 router.post('/getallpendesain', checkAuth, function (req, res, next) {
-  ddesainSchema.sequelize.query('SELECT DISTINCT `dmereks`.*,`mspegawais`.`nik`,`mspegawais`.`nama` FROM `dmereks` JOIN `mspegawais` ON `dmereks`.`nik` = `mspegawais`.`nik` UNION SELECT DISTINCT `dmereks`.*,`msnonpegawais`.`nik`,`msnonpegawais`.`nama` FROM `dmereks` JOIN `msnonpegawais` ON `dmereks`.`nik` = `msnonpegawais`.`nik`')
+  ddesainSchema.sequelize.query('SELECT DISTINCT `dmereks`.*,`mspegawai`.`nik`,`mspegawai`.`nama` FROM `dmereks` JOIN `mspegawai` ON `dmereks`.`nik` = `mspegawai`.`nik` UNION SELECT DISTINCT `dmereks`.*,`msnonpegawais`.`nik`,`msnonpegawais`.`nama` FROM `dmereks` JOIN `msnonpegawais` ON `dmereks`.`nik` = `msnonpegawais`.`nik`')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -486,7 +486,7 @@ router.post('/getallnonpendesain', checkAuth, function (req, res, next) {
 });
 
 router.post('/getpendesain', checkAuth, function (req, res, next) {
-  ddesainSchema.sequelize.query('SELECT DISTINCT `ddesainindustris`.*,`mspegawais`.`nik`,`mspegawais`.`nama` fROM `ddesainindustris` JOIN `mspegawais` ON `ddesainindustris`.`nik` = `mspegawais`.`nik`')
+  ddesainSchema.sequelize.query('SELECT DISTINCT `ddesainindustri`.*,`mspegawai`.`nik`,`mspegawai`.`nama` fROM `ddesainindustri` JOIN `mspegawai` ON `ddesainindustri`.`nik` = `mspegawai`.`nik`')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -510,8 +510,8 @@ router.post('/getpendesain', checkAuth, function (req, res, next) {
 });
 
 router.post('/getpendesainbyid', checkAuth, function (req, res, next) {
-  ddesainSchema.sequelize.query('SELECT DISTINCT * FROM `ddesainindustris` ' +
-    'WHERE `ddesainindustris`.`ID_DESAIN_INDUSTRI` = "' + req.body.id + '"')
+  ddesainSchema.sequelize.query('SELECT DISTINCT * FROM `ddesainindustri` ' +
+    'WHERE `ddesainindustri`.`id_desain_industri` = "' + req.body.id + '"')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -705,4 +705,101 @@ router.post('/updateverifikasidesainsave', checkAuth, function (req, res, next) 
   })
 })
 
+router.post('/fgetdesain', checkAuth, function (req, res, next) {
+  desainSchema.sequelize.query('SELECT `msdesainindustri`.*,`msrev`.`nama_rev`' +
+    'FROM `msrev` ' +
+    'JOIN `msdesainindustri` ON `msrev`.`ID` = `msdesainindustri`.`UNIT_KERJA` ' +
+    'WHERE `msdesainindustri`.`status` = 21')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(data)
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetpendesainbyid', checkAuth, function (req, res, next) {
+  ddesainSchema.sequelize.query('SELECT `ddesainindustri`.*,`mspegawai`.`nik`,`mspegawai`.`nama` FROM `ddesainindustri` JOIN `mspegawai` ON `ddesainindustri`.`nik` = `mspegawai`.`nik`' +
+    'WHERE `ddesainindustri`.`id_desain_industri` = "' + req.body.id + '" group by ddesainindustri.id UNION SELECT `ddesainindustri`.*,`msnonpegawai`.`nik`,`msnonpegawai`.`nama` ' +
+    ' FROM `ddesainindustri` ' +
+    ' JOIN `msnonpegawai` ON `ddesainindustri`.`nik` = `msnonpegawai`.`nik`' +
+   ' WHERE `ddesainindustri`.`id_desain_industri` = "' + req.body.id + '" group by ddesainindustri.id')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data:data[0]
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetjmldesain', checkAuth, function (req, res, next) {
+  desainSchema.sequelize.query('SELECT YEAR(TGL_INPUT) as tahun,count(*) as total from msdesainindustri WHERE `status` = 21 GROUP BY YEAR(TGL_INPUT)')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(data)
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetdesainbyid', checkAuth, function (req, res, next) {
+  desainSchema.sequelize.query('SELECT `msdesainindustri`.*, '+
+  ' (SELECT nama_rev FROM msrev WHERE ID = `msdesainindustri`.`UNIT_KERJA`) as SATUAN_KERJA, (SELECT NAMA_REV FROM msrev WHERE ID = `msdesainindustri`.`STATUS`) as STATUS ' +
+  'FROM `msdesainindustri` '+
+  'WHERE `msdesainindustri`.`ID` = "'+ req.body.id +'"')
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json({
+          data
+        })
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
 module.exports = router;
