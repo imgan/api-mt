@@ -23,6 +23,9 @@ const msipmancode = sequelize.define("msipmancode", {
   },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE,
+}  ,
+{
+    freezeTableName: true,
 });
 
 // force: true will drop the table if it already exists

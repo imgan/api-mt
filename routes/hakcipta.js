@@ -83,6 +83,65 @@ router.post('/gethakcipta', checkAuth, function (req, res, next) {
     });
 });
 
+router.post('/fgethakcipta', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query(' SELECT `mshakcipta`.*,`msrev`.`nama_rev` '+
+  ' FROM `msrev` '+
+  ' JOIN `mshakcipta` ON `msrev`.`ID` = `mshakcipta`.`UNIT_KERJA` '+
+  ' WHERE `mshakcipta`.`status` = 21' ,{type: hakciptaSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+
+router.post('/fgetinventorbyid', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query('SELECT `dhakcipta`.*,`mspegawai`.`nik`,`mspegawai`.`nama` '+
+  ' FROM `dhakcipta` '+
+  ' JOIN `mspegawai` ON `dhakcipta`.`NIK` = `mspegawai`.`NIK` '+
+  ' WHERE `dhakcipta`.`id_hakcipta` = "'+req.body.id+'" '+
+  ' UNION SELECT `dhakcipta`.*,`msnonpegawai`.`nik`,`msnonpegawai`.`nama` '+
+  ' FROM `dhakcipta` '+
+  ' JOIN `msnonpegawai` ON `dhakcipta`.`NIK` = `msnonpegawai`.`NIK` '+
+  ' WHERE `dhakcipta`.`id_hakcipta` = "'+req.body.id+'"', {type: hakciptaSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 router.post('/getdokumen', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
     code: Joi.string().required(),
@@ -92,10 +151,10 @@ router.post('/getdokumen', checkAuth, function (req, res, next) {
     code: req.body.code
   }
   Joi.validate(payload, validate, (error) => {
-    hakciptaSchema.sequelize.query('SELECT `msdokumens`.*,`msjenisdokumens`.*,`msjenisdokumens`.`id` ' +
-      ' FROM `msdokumens` ' +
-      'JOIN `msjenisdokumens` ON `msdokumens`.`JENIS_DOKUMEN` = `msjenisdokumens`.`ID` ' +
-      ' WHERE `msdokumens`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumens`.`ROLE` = 1')
+    hakciptaSchema.sequelize.query('SELECT `msdokumen`.*,`msjenisdokumen`.*,`msjenisdokumen`.`id` ' +
+      ' FROM `msdokumen` ' +
+      'JOIN `msjenisdokumen` ON `msdokumen`.`JENIS_DOKUMEN` = `msjenisdokumen`.`ID` ' +
+      ' WHERE `msdokumen`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumen`.`ROLE` = 1')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -133,10 +192,10 @@ router.post('/getdokumenver', checkAuth, function (req, res, next) {
     code: req.body.code
   }
   Joi.validate(payload, validate, (error) => {
-    hakciptaSchema.sequelize.query('SELECT `msdokumens`.*,`msjenisdokumens`.*,`msjenisdokumens`.`id` ' +
-      ' FROM `msdokumens` ' +
-      'JOIN `msjenisdokumens` ON `msdokumens`.`JENIS_DOKUMEN` = `msjenisdokumens`.`ID` ' +
-      ' WHERE `msdokumens`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumens`.`ROLE` = 2')
+    hakciptaSchema.sequelize.query('SELECT `msdokumen`.*,`msjenisdokumen`.*,`msjenisdokumen`.`id` ' +
+      ' FROM `msdokumen` ' +
+      'JOIN `msjenisdokumen` ON `msdokumen`.`JENIS_DOKUMEN` = `msjenisdokumen`.`ID` ' +
+      ' WHERE `msdokumen`.`NOMOR_PENDAFTAR` = "' + req.body.code + '"  AND `msdokumen`.`ROLE` = 2')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -214,10 +273,10 @@ router.post('/gethakciptadraftdetail', checkAuth, function (req, res, next) {
     id: req.body.id
   }
   Joi.validate(payload, validate, (error) => {
-    hakciptaSchema.sequelize.query('SELECT `mshakcipta`.*,`dhakcipta`.*, `mspegawais`.* ' +
+    hakciptaSchema.sequelize.query('SELECT `mshakcipta`.*,`dhakcipta`.*, `mspegawai`.* ' +
       'FROM `mshakcipta` ' +
       'JOIN `dhakcipta` ON `mshakcipta`.`ID` = `dhakcipta`.`ID_HAKCIPTA` ' +
-      'JOIN `mspegawais` ON `dhakcipta`.`NIK` = `mspegawais`.`NIK` ' +
+      'JOIN `mspegawai` ON `dhakcipta`.`NIK` = `mspegawai`.`NIK` ' +
       'WHERE `mshakcipta`.`ID` = "' + req.body.id + '"')
       .then((data) => {
         if (data.length < 1) {
@@ -291,7 +350,7 @@ router.post('/gethakciptastatus', checkAuth, function (req, res, next) {
   const status = req.body.status;
 
   if (role_id == 18) {
-    hakciptaSchema.sequelize.query('SELECT msh.*,msr.nama_rev FROM msrevs msr JOIN mshakcipta msh ON msr.id = msh.unit_kerja WHERE msh.status = ' + status + ' AND msh.kode_input = ' + userId + ' ')
+    hakciptaSchema.sequelize.query('SELECT msh.*,msr.nama_rev FROM msrev msr JOIN mshakcipta msh ON msr.id = msh.unit_kerja WHERE msh.status = ' + status + ' AND msh.kode_input = ' + userId + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -311,7 +370,7 @@ router.post('/gethakciptastatus', checkAuth, function (req, res, next) {
         });
       });
   } else {
-    hakciptaSchema.sequelize.query('SELECT msh.*,msr.nama_rev FROM msrevs msr JOIN mshakcipta msh ON msr.id = msh.unit_kerja WHERE msh.status = ' + status + ' ')
+    hakciptaSchema.sequelize.query('SELECT msh.*,msr.nama_rev FROM msrev msr JOIN mshakcipta msh ON msr.id = msh.unit_kerja WHERE msh.status = ' + status + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -335,7 +394,7 @@ router.post('/gethakciptastatus', checkAuth, function (req, res, next) {
 });
 
 router.post('/getpencipta', checkAuth, function (req, res, next) {
-  hakciptaSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from dhakcipta dp JOIN mspegawais mp ON dp.nik = mp.nik')
+  hakciptaSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from dhakcipta dp JOIN mspegawai mp ON dp.nik = mp.nik')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -359,7 +418,7 @@ router.post('/getpencipta', checkAuth, function (req, res, next) {
 });
 
 router.post('/getnonpencipta', checkAuth, function (req, res, next) {
-  hakciptaSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from dhakcipta dp JOIN msnonpegawais mp ON dp.nik = mp.nik')
+  hakciptaSchema.sequelize.query('SELECT DISTINCT dp.*,mp.nik, mp.nama from dhakcipta dp JOIN msnonpegawai mp ON dp.nik = mp.nik')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -499,7 +558,7 @@ router.post('/getinventorid', checkAuth, function (req, res, next) {
 
   Joi.validate(payload, validate, (error) => {
     PatenSchema.sequelize.query({
-      query: "SELECT DISTINCT * FROM `dpatens` WHERE id_paten = " + req.body.id + "",
+      query: "SELECT DISTINCT * FROM `dpaten` WHERE id_paten = " + req.body.id + "",
     }).then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -701,4 +760,75 @@ router.post('/updateverifikasihakciptasave', checkAuth, function (req, res, next
   })
 })
 
+router.post('/fgetdocumentbycode', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query('SELECT * FROM msdokumen WHERE ROLE = 1 AND SIZE > 0 AND NOMOR_PENDAFTAR = "'+req.body.code +'"' ,{type: hakciptaSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgethakciptabyid', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query('SELECT `mshakcipta`.*, (SELECT nama_rev FROM '+
+  ' msrev WHERE ID = `mshakcipta`.`UNIT_KERJA`) as satuan_kerja, (SELECT nama_rev '+
+  ' FROM msrev WHERE ID = `mshakcipta`.`STATUS`) as status_, (SELECT ' +
+  ' nama_rev FROM msrev WHERE ID = `mshakcipta`.`OBJECT`) as jenis_ciptaan '+
+  ' FROM `mshakcipta` WHERE `mshakcipta`.`id` = "'+req.body.id +'"' ,{type: hakciptaSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetjmlhakcipta', checkAuth, function (req, res, next) {
+  hakciptaSchema.sequelize.query('SELECT YEAR(createdAt) as tahun,count(*) as total from mshakcipta WHERE `status` = 21 GROUP BY YEAR(createdAt)' ,{type: hakciptaSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(data)
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
 module.exports = router;

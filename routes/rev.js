@@ -10,7 +10,7 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 router.post('/getrolenotpengembang', checkAuth, function (req, res, next) {
-    rev.sequelize.query("SELECT id,nama_rev FROM msrevs WHERE golongan = 5 AND nama_rev != 'Pengembang'")
+    rev.sequelize.query("SELECT id,nama_rev FROM msrev WHERE golongan = 5 AND nama_rev != 'Pengembang'")
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({

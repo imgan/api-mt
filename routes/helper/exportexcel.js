@@ -12,7 +12,7 @@ const router = express.Router();
 
 
 router.post('/getallpaten', checkAuth, function (req, res, next) {
-    patenSchema.sequelize.query('SELECT `mspatens`.*,(SELECT NAMA_REV FROM msrevs WHERE id = `mspatens`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrevs WHERE id = `mspatens`.`STATUS`) as STATUS FROM `mspatens` WHERE `status` = 20')
+    patenSchema.sequelize.query('SELECT `mspaten`.*,(SELECT NAMA_REV FROM msrev WHERE id = `mspaten`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrev WHERE id = `mspaten`.`STATUS`) as STATUS FROM `mspaten` WHERE `status` = 20')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -35,7 +35,7 @@ router.post('/getallpaten', checkAuth, function (req, res, next) {
 });
 
 router.post('/getallmerek', checkAuth, function (req, res, next) {
-    patenSchema.sequelize.query('SELECT `msmereks`.*,(SELECT NAMA_REV FROM msrevs WHERE id = `msmereks`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrevs WHERE id = `msmereks`.`STATUS`) as STATUS FROM `msmereks` WHERE `status` = 20')
+    patenSchema.sequelize.query('SELECT `msmerek`.*,(SELECT NAMA_REV FROM msrev WHERE id = `msmerek`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrev WHERE id = `msmerek`.`STATUS`) as STATUS FROM `msmerek` WHERE `status` = 20')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -58,7 +58,7 @@ router.post('/getallmerek', checkAuth, function (req, res, next) {
 }); 
 
 router.post('/getallmerek', checkAuth, function (req, res, next) {
-    patenSchema.sequelize.query('SELECT `msmereks`.*,(SELECT NAMA_REV FROM msrevs WHERE id = `msmereks`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrevs WHERE id = `msmereks`.`STATUS`) as STATUS FROM `msmereks` WHERE `status` = 20')
+    patenSchema.sequelize.query('SELECT `msmerek`.*,(SELECT NAMA_REV FROM msrev WHERE id = `msmerek`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrev WHERE id = `msmerek`.`STATUS`) as STATUS FROM `msmerek` WHERE `status` = 20')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -81,7 +81,7 @@ router.post('/getallmerek', checkAuth, function (req, res, next) {
 }); 
 
 router.post('/getallhakcipta', checkAuth, function (req, res, next) {
-    patenSchema.sequelize.query('SELECT `mshakcipta`.*,(SELECT NAMA_REV FROM msrevs WHERE id = `mshakcipta`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrevs WHERE id = `mshakcipta`.`STATUS`) as STATUS FROM `mshakcipta` WHERE `status` = 20')
+    patenSchema.sequelize.query('SELECT `mshakcipta`.*,(SELECT NAMA_REV FROM msrev WHERE id = `mshakcipta`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrev WHERE id = `mshakcipta`.`STATUS`) as STATUS FROM `mshakcipta` WHERE `status` = 20')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -104,7 +104,7 @@ router.post('/getallhakcipta', checkAuth, function (req, res, next) {
 }); 
 
 router.post('/getalldesain', checkAuth, function (req, res, next) {
-    patenSchema.sequelize.query('SELECT `msdesainindustris`.*,(SELECT NAMA_REV FROM msrevs WHERE id = `msdesainindustris`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrevs WHERE id = `msdesainindustris`.`STATUS`) as STATUS FROM `msdesainindustris` WHERE `status` = 20')
+    patenSchema.sequelize.query('SELECT `msdesainindustri`.*,(SELECT NAMA_REV FROM msrev WHERE id = `msdesainindustri`.`UNIT_KERJA`) as UNIT_KERJA, (SELECT NAMA_REV FROM msrev WHERE id = `msdesainindustri`.`STATUS`) as STATUS FROM `msdesainindustri` WHERE `status` = 20')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({

@@ -153,7 +153,7 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/getuserrole', checkAuth, function (req, res, next) {
-  UserSchema.sequelize.query('SELECT msusers.*, (SELECT NAMA_REV FROM msrevs WHERE id = `msusers`.`role_id`) as role, (SELECT NAMA_REV FROM msrevs WHERE id = `msusers`.`is_active`) as status FROM msusers')
+  UserSchema.sequelize.query('SELECT msuser.*, (SELECT NAMA_REV FROM msrev WHERE id = `msuser`.`role_id`) as role, (SELECT NAMA_REV FROM msrev WHERE id = `msuser`.`is_active`) as status FROM msuser')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({

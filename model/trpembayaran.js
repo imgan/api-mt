@@ -41,6 +41,9 @@ const trpembayaran = sequelize.define("trpembayaran", {
     },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
+}  ,
+{
+    freezeTableName: true,
 });
 
 // force: true will drop the table if it already exists

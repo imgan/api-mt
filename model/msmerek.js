@@ -73,6 +73,9 @@ const msmerek = sequelize.define("msmerek", {
     },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
+}  ,
+{
+    freezeTableName: true,
 });
 
 // force: true will drop the table if it already exists

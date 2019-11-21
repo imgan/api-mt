@@ -57,14 +57,14 @@ router.post('/addpembayaran', checkAuth, function (req, res, next) {
 
 router.post('/getpembayaran', checkAuth, function (req, res, next) {
     PembayaranSchema.sequelize.query('SELECT tr.*,msp.unit_kerja,msr.nama_rev as unit ' +
-        'FROM trpembayarans tr ' +
-        'JOIN mspatens msp ON tr.nomor_pendaftar = msp.nomor_permohonan ' +
-        'JOIN msrevs msr ON msp.unit_kerja = msr.id ' +
+        'FROM trpembayaran tr ' +
+        'JOIN mspaten msp ON tr.nomor_pendaftar = msp.nomor_permohonan ' +
+        'JOIN msrev msr ON msp.unit_kerja = msr.id ' +
         'UNION ' +
         'SELECT tr.*,msm.unit_kerja,msr.nama_rev as unit ' +
-        'FROM trpembayarans tr ' +
-        'JOIN msmereks msm ON tr.nomor_pendaftar = msm.nomor_pendaftar ' +
-        'JOIN msrevs msr ON msm.unit_kerja = msr.id ')
+        'FROM trpembayaran tr ' +
+        'JOIN msmerek msm ON tr.nomor_pendaftar = msm.nomor_pendaftar ' +
+        'JOIN msrev msr ON msm.unit_kerja = msr.id ')
         .then(data => {
             res.status(200).json({
                 message: 'success',
@@ -89,10 +89,10 @@ router.post('/getdetail', checkAuth, function (req, res, next) {
     }
 
     Joi.validate(payload, validate, (error) => {
-        PembayaranSchema.sequelize.query('SELECT `mspatens`.*,`msrevs`.`nama_rev` ' +
-            'FROM `mspatens` ' +
-            'JOIN `msrevs` ON `mspatens`.`UNIT_KERJA` = `msrevs`.`ID` ' +
-            'WHERE `mspatens`.`id` = ' + req.body.nomor_paten + ' ')
+        PembayaranSchema.sequelize.query('SELECT `mspaten`.*,`msrev`.`nama_rev` ' +
+            'FROM `mspaten` ' +
+            'JOIN `msrev` ON `mspaten`.`UNIT_KERJA` = `msrev`.`ID` ' +
+            'WHERE `mspaten`.`id` = ' + req.body.nomor_paten + ' ')
             .then(data => {
                 res.status(200).json({
                     message: 'success',

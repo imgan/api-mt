@@ -56,7 +56,7 @@ const upload = multer({
 
 /* GET users listing. */
 router.post('/getinventor', checkAuth, function (req, res, next) {
-  dPatenSchema.sequelize.query('SELECT DISTINCT `dpatens`.*,`mspegawais`.`NIK`,`mspegawais`.`NAMA` FROM `dpatens` JOIN `mspegawais` ON `dpatens`.`NIK` = `mspegawais`.`NIK`')
+  dPatenSchema.sequelize.query('SELECT DISTINCT `dpaten`.*,`mspegawai`.`NIK`,`mspegawai`.`NAMA` FROM `dpaten` JOIN `mspegawai` ON `dpaten`.`NIK` = `mspegawai`.`NIK`')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -92,7 +92,7 @@ router.post('/getdokumenver', checkAuth, function (req, res, next) {
  const {nomor_pendaftar, role} = payload  
 
   Joi.validate(payload, validate, (error) => {
-    dPatenSchema.sequelize.query("SELECT msd.*,msj.*,msj.id FROM msdokumens msd JOIN msjenisdokumens msj ON msd.jenis_dokumen = msj.id WHERE msd.nomor_pendaftar = '"+nomor_pendaftar+"' AND msd.role = '"+role+"'")
+    dPatenSchema.sequelize.query("SELECT msd.*,msj.*,msj.id FROM msdokumen msd JOIN msjenisdokumen msj ON msd.jenis_dokumen = msj.id WHERE msd.nomor_pendaftar = '"+nomor_pendaftar+"' AND msd.role = '"+role+"'")
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -117,7 +117,7 @@ router.post('/getdokumenver', checkAuth, function (req, res, next) {
 });
 
 router.post('/getnoninventor', checkAuth, function (req, res, next) {
-  dPatenSchema.sequelize.query('SELECT DISTINCT `dpatens`.*,`msnonpegawais`.`NIK`,`msnonpegawais`.`NAMA` FROM `dpatens` JOIN `msnonpegawais` ON `dpatens`.`NIK` = `msnonpegawais`.`NIK`')
+  dPatenSchema.sequelize.query('SELECT DISTINCT `dpaten`.*,`msnonpegawais`.`NIK`,`msnonpegawai`.`NAMA` FROM `dpaten` JOIN `msnonpegawai` ON `dpaten`.`NIK` = `msnonpegawai`.`NIK`')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -170,7 +170,7 @@ router.post('/getpaten', checkAuth, function (req, res, next) {
 
 router.post('/getpatenbyyear', checkAuth, function (req, res, next) {
   PatenSchema.sequelize.query('SELECT * FROM (SELECT YEAR(createdAt) as tahun,count(*) as total ' +
-    'FROM mspatens GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
+    'FROM mspaten GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC')
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -203,12 +203,12 @@ router.post('/getpatendiajukandetail', checkAuth, function (req, res, next) {
   }
   Joi.validate(payload, validate, (error) => {
     PatenSchema.sequelize.query(
-      'SELECT `mspatens`.*,(SELECT ' +
+      'SELECT `mspaten`.*,(SELECT ' +
       'nama_rev ' +
       ' FROM ' +
       ' msrevs '+
       ' WHERE '+
-       ' id = `mspatens`.`jenis_paten`) as jenis_paten, (SELECT nama_rev FROM msrevs WHERE id = `mspatens`.`unit_kerja`) as unit_kerja FROM`mspatens` WHERE`mspatens`.`status` = 20 AND`mspatens`.`id` = "'+req.body.id+'"')
+       ' id = `mspaten`.`jenis_paten`) as jenis_paten, (SELECT nama_rev FROM msrev WHERE id = `mspaten`.`unit_kerja`) as unit_kerja FROM `mspaten` WHERE`mspaten`.`status` = 20 AND`mspaten`.`id` = "'+req.body.id+'"')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -254,7 +254,7 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
   const status = req.body.status;
 
   if (role_id == 18) {
-    PatenSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
+    PatenSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrev b LEFT JOIN mspaten a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' AND a.KODE_INPUT = ' + userId + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -274,7 +274,7 @@ router.post('/getpatenstatus', checkAuth, function (req, res, next) {
         });
       });
   } else {
-    PatenSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrevs b LEFT JOIN mspatens a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
+    PatenSchema.sequelize.query('SELECT a.pernah_diajukan,a.judul,a.id,a.createdAt,b.keterangan,b.nama_rev FROM msrev b LEFT JOIN mspaten a ON b.ID = a.UNIT_KERJA WHERE a.status = ' + status + ' ')
       .then((data) => {
         if (data.length < 1) {
           res.status(404).json({
@@ -377,11 +377,11 @@ router.post('/getpatendraft', checkAuth, function (req, res, next) {
   }
 
   Joi.validate(payload, validate, (error) => {
-    PatenSchema.sequelize.query('SELECT `mspatens`.*,`dpatens`.*, `mspegawais`.* '+
-      ' FROM `mspatens` '+
-     ' JOIN `dpatens` ON `mspatens`.`ID` = `dpatens`.`ID_PATEN` '+
-      ' JOIN `mspegawais` ON `dpatens`.`NIK` = `mspegawais`.`NIK` '+
-     ' WHERE `mspatens`.`ID` = ' + req.body.id + " ")
+    PatenSchema.sequelize.query('SELECT `mspaten`.*,`dpaten`.*, `mspegawai`.* '+
+      ' FROM `mspaten` '+
+     ' JOIN `dpaten` ON `mspaten`.`ID` = `dpaten`.`ID_PATEN` '+
+      ' JOIN `mspegawai` ON `dpaten`.`NIK` = `mspegawai`.`NIK` '+
+     ' WHERE `mspaten`.`ID` = ' + req.body.id + " ")
     .then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -414,7 +414,7 @@ router.post('/getinventorbyid', checkAuth, function (req, res, next) {
 
   Joi.validate(payload, validate, (error) => {
     PatenSchema.sequelize.query({
-      query: "SELECT DISTINCT * FROM `dpatens` WHERE id_paten = " + req.body.id + "",
+      query: "SELECT DISTINCT * FROM `dpaten` WHERE id_paten = " + req.body.id + "",
     }).then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -489,7 +489,7 @@ router.post('/getinventorid', checkAuth, function (req, res, next) {
 
   Joi.validate(payload, validate, (error) => {
     PatenSchema.sequelize.query({
-      query: "SELECT DISTINCT * FROM `dpatens` WHERE id_paten = " + req.body.id + "",
+      query: "SELECT DISTINCT * FROM `dpaten` WHERE id_paten = " + req.body.id + "",
     }).then((data) => {
       if (data.length < 1) {
         res.status(404).json({
@@ -641,6 +641,135 @@ router.post('/deletedraft', checkAuth, function (req, res, next) {
     }
   });
 })
+
+router.post('/fgetdocumentbycode', checkAuth, function (req, res, next) {
+  PatenSchema.sequelize.query('SELECT * FROM msdokumen WHERE ROLE = 1 AND SIZE > 0 AND NOMOR_PENDAFTAR = "'+req.body.code +'"' ,{type: PatenSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetinventorbyid', checkAuth, function (req, res, next) {
+  PatenSchema.sequelize.query('SELECT `dpaten`.*,`mspegawai`.`nik`,`mspegawai`.`nama` '+
+  ' FROM `dpaten` JOIN `mspegawai` ON `dpaten`.`NIK` = `mspegawai`.`NIK` '+
+  ' WHERE `dpaten`.`ID_PATEN` =  "'+req.body.id+'"' +
+  ' UNION SELECT `dpaten`.*,`msnonpegawai`.`nik`,`msnonpegawai`.`nama` '+
+  ' FROM `dpaten` JOIN `msnonpegawai` ON `dpaten`.`NIK` = `msnonpegawai`.`NIK`' +
+  ' WHERE `dpaten`.`ID_PATEN` = "'+req.body.id+'"', {type: PatenSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetpatenbyid', checkAuth, function (req, res, next) {
+  PatenSchema.sequelize.query('SELECT `mspaten`.*, (SELECT NAMA_REV FROM msrev WHERE '+
+      ' ID = `mspaten`.`UNIT_KERJA`) as satuan_kerja, '+
+     ' (SELECT NAMA_REV FROM msrev WHERE ID = `mspaten`.`STATUS`) as status_ '+
+     ' FROM `mspaten` '+
+    ' WHERE `mspaten`.`id` = "'+req.body.id +'"' ,{type: PatenSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetjmlpaten', checkAuth, function (req, res, next) {
+  PatenSchema.sequelize.query('SELECT YEAR(createdAt) as tahun,count(*) as total from mspaten WHERE `status` = 21 GROUP BY YEAR(createdAt)' ,{type: PatenSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(data)
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
+router.post('/fgetpaten', checkAuth, function (req, res, next) {
+  PatenSchema.sequelize.query('SELECT `mspaten`.*,`msrev`.`nama_rev` '+
+  ' FROM `msrev` '+
+  ' JOIN `mspaten` ON `msrev`.`ID` = `mspaten`.`UNIT_KERJA` '+
+  ' WHERE `mspaten`.`status` = 21' ,{type: PatenSchema.sequelize.QueryTypes.SELECT})
+    .then((data) => {
+      if (data.length < 1) {
+        res.status(404).json({
+          message: 'Not Found',
+        });
+      }
+      else {
+        res.status(200).json(
+          data
+        )
+      }
+      // });x
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+        status: 500
+      });
+    });
+});
+
 
 router.post('/ajukan', checkAuth, function (req, res, next) {
   let validate = Joi.object().keys({
